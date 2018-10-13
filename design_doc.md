@@ -1,6 +1,13 @@
 # AWAP 2019 Design Document
 Last updated 10/13/18, v1.0
 
+## Teams
+
+Map Design: Alan, Andrew
+Scoring: Dillan, Cuebeom
+Bots/AI: Misha, Ian, Justin
+Visualizer: CJ, Woody, Gwyneth, Harry
+
 ## Game overview
 
 Our game this year is, in short, a TOC simulator. In order to accurately simulate the "feel" of TOC, the TOC simulator should be able to represent some of the key characteristics of a career fair. In particular, we want to emulate:
