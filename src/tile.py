@@ -18,7 +18,7 @@ class Tile(object):
 
     def execute_step(self):
         for bot in self.bots_not_in_line:
-            bot.execute_step(compute_threshold())
+            bot.execute_step()
 
     def add_bot(self,bot, to_line):
         """ to_line true if adding bot into the lines
