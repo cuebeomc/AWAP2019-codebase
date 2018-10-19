@@ -94,7 +94,7 @@ class TileIsNotInBooth(Exception):
     pass
 
 #represents a block of tiles that are a booth. References 1 or 2 lines.
-class Booth():
+class Booth(object):
 
     def __init__(self, booth_tiles, line_tiles, name, wait_time):
         """ booth_tiles: list of tiles that constitute the booth already
@@ -124,7 +124,7 @@ class Booth():
         self.line[line_index].add_bot(bot)
 
 #handle people leaving in the middle
-class Line():
+class Line(object):
     """Line is a collection of tiles
         Line is responsible for updating bots in lines,
         while Tile is responsible for updating bots not
