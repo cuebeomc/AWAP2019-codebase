@@ -1,11 +1,14 @@
 # AWAP 2019 Design Document
-Last updated 10/13/18, v1.0
+Last updated 10/19/18, v1.1
 
 ## Teams
 
 Map Design: Alan, Andrew
+
 Scoring: Dillan, Cuebeom
+
 Bots/AI: Misha, Ian, Justin
+
 Visualizer: CJ, Woody, Gwyneth, Harry
 
 ## Game overview
@@ -50,6 +53,7 @@ In order to implement the mechanics above, the code should have the following st
 
 1. The board
     * The board should keep track of a m x n set of tiles in a graph, and it should implement a "step" function. For each step, the board should update each of the m x n tiles, each of which should have their own step function for the board to use.
+    * The board should initialize the set of booths and the set of lines based on a config file (both of these should be classes). These should handle line movement and booth names/configs.
     * Initialization should use a config file that we generate/create and initialize the m x n set of tiles that are either empty, are a line for a booth, or contain booths. Config files should indicate where a booth can go and should create zones for different sizes of companies. For each company, it should also create line zones for each recruiter in the company. Afterwards, it should initialize the bots - note that we do not want them all entering the career fair (in other words, we don't want them near the entrance) once the game starts for the player. The board should already be hectic once the player starts the game.
     * Since the board will be a graph, we have the option of adding weights onto the edges of the graph to indicate the amount of time it will take for a bot to get from one tile to the other, or we can calculate every time a bot starts to move into a tile. However, the second option is computationally inefficient once we have multiple bots in a tile, and so we should also have a function to update the weights every step to make sure movement penalties get updated with the number of people on a tile.
 2. The tiles
