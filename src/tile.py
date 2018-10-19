@@ -2,12 +2,12 @@ class Tile(object):
 
     MAX_PEOPLE_IN_LINE = 10
 
-    def __init__(self,x,y,end_of_line):
+    def __init__(self,x,y):
         self.bots_in_line = []
         self.bots_not_in_line = []
         self.x = x
         self.y = y
-        self.end_of_line = end_of_line
+        self.end_of_line = false
         self.line = None
         self.booth = None
 
@@ -18,7 +18,8 @@ class Tile(object):
 
     def execute_step(self):
         for bot in self.bots_not_in_line:
-            bot.execute_step()
+            if (bot.execute_step()):
+                self.bots_not_in_line.remove(bot)
 
     def add_bot(self,bot, to_line):
         """ to_line true if adding bot into the lines
@@ -42,13 +43,19 @@ class Tile(object):
         """ True if the number of bots in line is at the max. """
         if not self.line:
             raise TileIsNotInLine
-        return len(self.bots_in_line) == MAX_PEOPLE_IN_LINE
+        return end_of_line or len(self.bots_in_line) == MAX_PEOPLE_IN_LINE
 
     def get_num_in_line(self):
         """ Return the number of bots in the line at this tile. """
         if not self.line:
             raise TileIsNotInLine
         return len(self.bots_in_line)
+
+    def get_end_of_line(self):
+        return self.end_of_line
+
+    def set_end_of_line(self, end_of_line):
+        self.end_of_line = end_of_line
 
     def pop_line(self):
         """ Kick the bot at the front of the line at this tile
@@ -131,6 +138,8 @@ class Line(object):
         in the line
         """
 
+    TIME_DECREASE_AMOUNT = 10
+
     def __init__(self,booth_name,tiles, wait_time):
         """booth_name: name of the booth
             tiles: list of tiles that constitute the line
@@ -139,21 +148,25 @@ class Line(object):
         self.tiles = tiles
         for tile in tiles:
             tile.put_into_line(self)
+        tiles[len(tiles) - 1].set_end_of_line(true)
         self.last_tile_index = 0
         self.time_left = wait_time
 
     def add_bot(self,bot):
+        if (self.tiles[last_tile_index].line_max_capacity):
+            last_tile_index++
         self.tiles[last_tile_index].add_bot(bot,True)
 
-    def compute_step:
+    def compute_step():
         # we don't really have to compute anything
         # since for now we assume that progress for
         # talking to recruiter is independent of
         # local population density
 
     def execute_step(self):
-        for tile in self.tiles:
-            tile.compute_step()
+        time_left -= TIME_DECREASE_AMOUNT
+        if (time_left <= 0):
+            move_up()
 
     def _move_up(self):
         """Moves the whole line up by one"""
@@ -165,5 +178,5 @@ class Line(object):
             lucky_bot = self.tiles[index].pop_line()
             self.tiles[index - 1].add_bot(lucky_bot, True)
             index += 1
-        if bot.empty_line() and last_tile_index != 0:
-            self.last_tile_index--;
+        if self.tiles[last_tile_index].empty_line() and last_tile_index != 0:
+            self.last_tile_index -= 1
