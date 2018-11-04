@@ -1,104 +1,96 @@
 class Tile(object):
-
-    MAX_PEOPLE_IN_LINE = 10
-
-    def __init__(self,x,y):
+    def __init__(self, x, y, max):
+        self.loc = (x, y)
         self.bots_in_line = []
-        self.bots_not_in_line = []
-        self.x = x
-        self.y = y
+        self.bots = []
         self.end_of_line = false
         self.line = None
         self.booth = None
+        self.threshold = max
 
     def compute_step(self):
-        """ Represents movement after a single time step. """
-        for bot in self.bots_not_in_line:
-            bot.compute_step(compute_threshold())
+        """Calculates the next step for each of the bots in the line."""
+        for bot in self.bots:
+            bot.compute_step()
+        for bot in self.bots_in_line:
+            bot.compute_step()
 
     def execute_step(self):
-        for bot in self.bots_not_in_line:
-            if (bot.execute_step()):
-                self.bots_not_in_line.remove(bot)
+        """Executes the precomputed step for each bot."""
+        for bot in self.bots:
+            bot.execute_step()
+        for bot in self.bots_in_line:
+            bot.execute_step()
 
-    def add_bot(self,bot, to_line):
-        """ to_line true if adding bot into the lines
-                    false if adding bot not as a line""""
-        if to_line:
-            if not self.line :
-                raise TileIsNotInLine
-            if (not self.end_of_line) and len(self.bots_in_line) < MAX_PEOPLE_IN_LINE:
-                raise TooManyPeopleInLine
-            self.bots_in_line.append(bot)
-        else:
-            self.bots_not_in_line.append(bot)
-
-    def empty_line(self):
-        """True if no bots in line at this tile."""
-        if not self.line:
-            raise TileIsNotInLine
-        return len(self.bots_in_line) == 0
-
-    def line_max_capacity(self):
-        """ True if the number of bots in line is at the max. """
-        if not self.line:
-            raise TileIsNotInLine
-        return end_of_line or len(self.bots_in_line) == MAX_PEOPLE_IN_LINE
-
-    def get_num_in_line(self):
-        """ Return the number of bots in the line at this tile. """
-        if not self.line:
-            raise TileIsNotInLine
-        return len(self.bots_in_line)
-
-    def get_end_of_line(self):
-        return self.end_of_line
-
-    def set_end_of_line(self, end_of_line):
-        self.end_of_line = end_of_line
-
-    def pop_line(self):
-        """ Kick the bot at the front of the line at this tile
-            *(Not responsible for stepping the kicked bot!!!
-        """
-        if not self.line:
-            raise TileIsNotInLine
-        self.bots_in_line.pop(0)
-
-    def put_into_line(self,line):
-        """ Give a reference to the line """
-        self.line = line
+    def is_line(self):
+        """Returns true if tile is part of line."""
+        return (self.line != None)
 
     def get_line(self):
+        """Returns the line if tile is part of the booth."""
         return self.line
 
-    def label_booth(self,booth):
-        self.booth = booth
+    def is_booth(self):
+        """Returns true if tile is part of booth. Line should not be set."""
+        return (self.booth != None) and (self.line == None)
 
     def get_booth(self):
-        if not self.booth:
-            raise TileIsNotInBooth
-        return self.booth
+        """Returns the booth if tile is part of the booth."""
+        if self.is_booth():
+            return self.booth
+        else:
+            return None
 
-    #Moves bots a certain amount based on the number of bots in and out of line
-    def compute_threshold(self):
-        return int(Math.log(2.0 * len(self.bots_in_line) + 3.0 * len(self.bots_not_in_line)))
+    def set_line(self, ln, bth):
+        """Only to be used in init. Sets the line and booth for this tile."""
+        self.line = ln
+        self.booth = bth
 
-class TooManyPeopleInLine(Exception):
-    """ Raised when a bot is added to a tile that is not the end of a line
-        and the max capacity has already been reached
-    """
-    pass
+    def set_booth(self, bth):
+        """Only to be used in init. Sets the booth for this tile."""
+        self.line = None
+        self.booth = bth
 
-class TileIsNotInLine(Exception):
-    """" Raised when we try to do shit even though the tile is not part of a line
-    """"
-    pass
+    def add_to_line(self, bot):
+        """Adds bot to the line. Returns true if successful, false o/w."""
+        if end_of_line:
+            bots_in_line.append(bot)
+            return True
+        return False
 
-class TileIsNotInBooth(Exception):
-    """" Raised when we try to do shit even though the tile is not part of a booth
-    """"
-    pass
+    def add_to_tile(self, bot):
+        """Adds bot to the tile. Returns true, for consistency."""
+        bots.append(bot)
+        return True
+
+    def remove_from_line(self, bot):
+        """Attempts to remove bot from line. True if successful."""
+        try:
+            self.bots_in_line = self.bots_in_line.remove(bot)
+            return True
+        except ValueError:
+            return False
+
+    def remove_from_tile(self, bot):
+        """Attempts to remove bot from tile. True if successful."""
+        try:
+            self.bots = self.bots.remove(bot)
+            return True
+        except ValueError:
+            return False
+
+    def set_end_of_line(self, end_of_line):
+        """Updates this tile's status as the end of the line."""
+        self.end_of_line = end_of_line
+
+    def update_line(self, new_line):
+        """Sets the line to an updated line. (Mass update)"""
+        self.bots_in_line = new_line
+
+    def update_threshold(self):
+        """Updates the threshold for movement into this tile."""
+        self.threshold = int(Math.log(2.0 * len(self.bots_in_line)
+                          + 3.0 * len(self.bots)))
 
 #represents a block of tiles that are a booth. References 1 or 2 lines.
 class Booth(object):
@@ -127,9 +119,6 @@ class Booth(object):
         for line in self.lines:
             line.execute_step()
 
-    def add_bot(self,bot, line_index):
-        self.line[line_index].add_bot(bot)
-
 #handle people leaving in the middle
 class Line(object):
     """Line is a collection of tiles
@@ -137,12 +126,12 @@ class Line(object):
         while Tile is responsible for updating bots not
         in the line
         """
-
     TIME_DECREASE_AMOUNT = 10
 
     def __init__(self,booth_name,tiles, wait_time):
         """booth_name: name of the booth
-            tiles: list of tiles that constitute the line
+            tiles: list of tiles that constitute the line. Should be in order
+            from front to end, where end is the last tile in the line.
             """
         self.booth_name = booth_name
         self.tiles = tiles
