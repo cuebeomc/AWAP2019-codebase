@@ -11,6 +11,7 @@ class Bot(object):
         self.speed = speed
 
     def update_progress(self):
+        check_sane(self.dest_tile)
         if self.progress >= self.dest_tile.threshold:
             self.tile = self.dest_tile
             # TODO(Cuebeom): Update bots in tile class
@@ -24,24 +25,18 @@ class Bot(object):
         """
         Bot should set dest_tile
         """
-        raise "Superclass must implement compute_step"
+        raise "You must implement compute_step"
 
     def compute_progress(self, board):
-        new_dest = self.dest_tile
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
+        old_dest = self.dest_tile
         compute_step(self,board)
-=======
-        compute_step(self)
->>>>>>> Stashed changes
-=======
-        compute_step(self)
->>>>>>> Stashed changes
-        if new_dest != self.dest_tile:
+        check_sane(self.dest_tile)
+        if old_dest != self.dest_tile:
             self.progress = 0
 
     def execute_step(self, board, new_dest=None):
         if new_dest is not None:
+            check_sane(new_dest)
             self.tile = new_dest
             self.dest_tile = None
             self.progress = 0
