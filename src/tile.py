@@ -1,4 +1,12 @@
 class Tile(object):
+    """ Tile keeps track of everything on a tile.
+
+    loc: the lattice position of the tile
+    bots_in_line: the bots on this tile that are in a line (if a line exists)
+    bots: the bots on this tile that are not in a line
+    end_of_line: indicates true if this is the current "end of the line";
+
+    """
     def __init__(self, x, y, max):
         self.loc = (x, y)
         self.bots_in_line = []
