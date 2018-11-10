@@ -5,7 +5,10 @@ class Tile(object):
     bots_in_line: the bots on this tile that are in a line (if a line exists)
     bots: the bots on this tile that are not in a line
     end_of_line: indicates true if this is the current "end of the line";
-
+                 that is, bots enter the line on this tile.
+    line: None if not part of a line, otherwise a Line object
+    booth: None if free, otherwise a Booth object
+    threshold: progress needed to move into this tile
     """
     def __init__(self, x, y, max):
         self.loc = (x, y)
@@ -95,6 +98,10 @@ class Tile(object):
         """Sets the line to an updated line. (Mass update)"""
         self.bots_in_line = new_line
 
+    def get_threshold(self):
+        """Gets the threshold limit of the tile."""
+        return self.threshold
+
     def update_threshold(self):
         """Updates the threshold for movement into this tile."""
         self.threshold = int(Math.log(2.0 * len(self.bots_in_line)
@@ -102,17 +109,19 @@ class Tile(object):
 
 #represents a block of tiles that are a booth. References 1 or 2 lines.
 class Booth(object):
-
     def __init__(self, booth_tiles, line_tiles, name, wait_time):
-        """ booth_tiles: list of tiles that constitute the booth already
-            name : booth_name
+        """
+        Booth handles the set of tiles that constitute a company's booth.
+        It 
+        booth_tiles: list of tiles that constitute the booth
+        name: the name of the booth (that is, the name of the company)
             line_tiles: list of lists of tiles, each of which constitute
                 an individual line
             wait_time: how long it takes to talk to a recruiter
-            """
+        """
         self.tiles = booth_tiles
         for tile in booth_tiles:
-            tile.label_booth(self)
+            tile.set_booth(self)
         self.name = name
         self.lines = []
         for tiles in line_tiles:
