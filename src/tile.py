@@ -33,6 +33,9 @@ class Tile(object):
         for bot in self.bots_in_line:
             bot.execute_step()
 
+    def get_location(self):
+        return self.loc
+
     def is_line(self):
         """Returns true if tile is part of line."""
         return (self.line != None)
@@ -52,14 +55,12 @@ class Tile(object):
         else:
             return None
 
-    def set_line(self, ln, bth):
-        """Only to be used in init. Sets the line and booth for this tile."""
+    def set_line(self, ln):
+        """Only to be used in init. Sets the line for this tile."""
         self.line = ln
-        self.booth = bth
 
     def set_booth(self, bth):
         """Only to be used in init. Sets the booth for this tile."""
-        self.line = None
         self.booth = bth
 
     def add_to_line(self, bot):
@@ -109,65 +110,59 @@ class Tile(object):
 
 #represents a block of tiles that are a booth. References 1 or 2 lines.
 class Booth(object):
-    def __init__(self, booth_tiles, line_tiles, name, wait_time):
+    def __init__(self, name, size, booth_tiles, lines, wait_time):
         """
         Booth handles the set of tiles that constitute a company's booth.
-        It 
+        It initializes the lines.
+
         booth_tiles: list of tiles that constitute the booth
+        size: size of the company for the booth.
         name: the name of the booth (that is, the name of the company)
-            line_tiles: list of lists of tiles, each of which constitute
-                an individual line
-            wait_time: how long it takes to talk to a recruiter
+        line_tiles: list of lists of tiles, each of which constitute
+                    an individual line. Should not be empty.
         """
+        self.name = name
+        self.size = size
         self.tiles = booth_tiles
         for tile in booth_tiles:
             tile.set_booth(self)
-        self.name = name
-        self.lines = []
-        for tiles in line_tiles:
-            self.lines.append(Line(self.name, tiles, self.wait_time))
-        self.WAIT_TIME = wait_time
-
-    def compute_step():
-        # again, we assume talking to recruiter's isn't affected
-        # by the amount of people around them
+        self.lines = [Line(self.name, line, wait_time) for line in lines]
 
     def execute_step(self):
         for line in self.lines:
             line.execute_step()
 
-#handle people leaving in the middle
 class Line(object):
-    """Line is a collection of tiles
-        Line is responsible for updating bots in lines,
-        while Tile is responsible for updating bots not
-        in the line
-        """
+    """
+    Line is a collection of tiles that are part of the "line zone".
+    Line is responsible for moving the bots in a line if they choose
+    to stay in the line.
+    """
     TIME_DECREASE_AMOUNT = 10
 
-    def __init__(self,booth_name,tiles, wait_time):
-        """booth_name: name of the booth
-            tiles: list of tiles that constitute the line. Should be in order
-            from front to end, where end is the last tile in the line.
-            """
-        self.booth_name = booth_name
+    def __init__(self, name, tiles, wait_time):
+        """
+        name: Name of the company the line is for.
+        tiles: The list of tiles that constitute the line. Should be in order
+               from front to end, where end is the last tile in the tile.
+        recruiter_speed: The number of turns it takes to pop a person
+                         off the line.
+        progress: the current progress
+        current_talker: the bot that is currently talking to the recruiter.
+        """
+        self.booth_name = name
         self.tiles = tiles
         for tile in tiles:
-            tile.put_into_line(self)
-        tiles[len(tiles) - 1].set_end_of_line(true)
-        self.last_tile_index = 0
-        self.time_left = wait_time
+            tile.set_line(self)
+        self.tiles[0].set_end_of_line(True)
+        self.recruiter_speed = wait_time
+        self.progress = 0
+        self.current_talker = None
 
     def add_bot(self,bot):
         if (self.tiles[last_tile_index].line_max_capacity):
             last_tile_index++
         self.tiles[last_tile_index].add_bot(bot,True)
-
-    def compute_step():
-        # we don't really have to compute anything
-        # since for now we assume that progress for
-        # talking to recruiter is independent of
-        # local population density
 
     def execute_step(self):
         time_left -= TIME_DECREASE_AMOUNT
