@@ -19,12 +19,12 @@ class Tile(object):
         self.booth = None
         self.threshold = max
 
-    def compute_step(self):
+    def compute_step(self, board):
         """Calculates the next step for each of the bots in the line."""
         for bot in self.bots:
-            bot.compute_step()
+            bot.compute_step(board)
         for bot in self.bots_in_line:
-            bot.compute_step()
+            bot.compute_step(board)
 
     def execute_step(self):
         """Executes the precomputed step for each bot."""
@@ -35,6 +35,9 @@ class Tile(object):
 
     def get_location(self):
         return self.loc
+
+    def get_population(self):
+        return len(bots) + len(bots_in_line)
 
     def is_line(self):
         """Returns true if tile is part of line."""
@@ -83,6 +86,9 @@ class Tile(object):
         except ValueError:
             return False
 
+    def get_bots_in_line(self):
+        return self.bots_in_line
+
     def remove_from_tile(self, bot):
         """Attempts to remove bot from tile. True if successful."""
         try:
@@ -111,9 +117,8 @@ class Tile(object):
 #represents a block of tiles that are a booth. References 1 or 2 lines.
 class Booth(object):
     def __init__(self, name, size, booth_tiles, lines, wait_time):
-        """
-        Booth handles the set of tiles that constitute a company's booth.
-        It initializes the lines.
+        """ Booth handles the set of tiles that constitute a company's booth.
+        It initializes the lines and stores them under booth.
 
         booth_tiles: list of tiles that constitute the booth
         size: size of the company for the booth.
@@ -140,7 +145,7 @@ class Line(object):
     """
     TIME_DECREASE_AMOUNT = 10
 
-    def __init__(self, name, tiles, wait_time):
+    def __init__(self, name, tiles, wait_time, max_per_tile):
         """
         name: Name of the company the line is for.
         tiles: The list of tiles that constitute the line. Should be in order
@@ -158,26 +163,33 @@ class Line(object):
         self.recruiter_speed = wait_time
         self.progress = 0
         self.current_talker = None
-
-    def add_bot(self,bot):
-        if (self.tiles[last_tile_index].line_max_capacity):
-            last_tile_index++
-        self.tiles[last_tile_index].add_bot(bot,True)
+        self.max_per_tile = max_per_tile
 
     def execute_step(self):
-        time_left -= TIME_DECREASE_AMOUNT
-        if (time_left <= 0):
-            move_up()
+        self.update_line()
 
-    def _move_up(self):
-        """Moves the whole line up by one"""
-        index = 0
-        kicked_bot = self.tiles[index].pop_line()
-        kicked_bot.step() # note step needs to handle moving after getting out of line
-        index += 1
-        while (index <= self.last_tile_index):
-            lucky_bot = self.tiles[index].pop_line()
-            self.tiles[index - 1].add_bot(lucky_bot, True)
-            index += 1
-        if self.tiles[last_tile_index].empty_line() and last_tile_index != 0:
-            self.last_tile_index -= 1
+    def update_line(self):
+        full_line = []
+        for tile in self.tiles:
+            full_line += tile.get_bots_in_line()
+        if full_line:
+            front_of_line = full_line[0]
+            if front_of_line == self.current_talker:
+                self.progress += 1
+                if self.progress >= self.recruiter_speed:
+                    full_line.pop(0)
+        try:
+            self.current_talker = full_line[0]
+        except:
+            self.current_talker = None
+        self.delegate(full_line)
+
+    def delegate(self, line):
+        last_tile = self.tiles[-1]
+        for tile in self.tiles:
+            if tile == last_tile:
+                tile.update_line(line)
+            else:
+                mini_line = line[:self.max_per_tile]
+                line = line[self.max_per_tile:]
+                tile.update_line(mini_line)
