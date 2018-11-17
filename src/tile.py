@@ -97,9 +97,13 @@ class Tile(object):
         except ValueError:
             return False
 
-    def set_end_of_line(self, end_of_line):
+    def set_end(self, end_of_line):
         """Updates this tile's status as the end of the line."""
         self.end_of_line = end_of_line
+
+    def is_end(self):
+        """Checks if this tile is the end of the line."""
+        return self.end_of_line
 
     def update_line(self, new_line):
         """Sets the line to an updated line. (Mass update)"""
@@ -134,6 +138,7 @@ class Booth(object):
         self.lines = [Line(self.name, line, wait_time) for line in lines]
 
     def execute_step(self):
+        """Executes steps for lines."""
         for line in self.lines:
             line.execute_step()
 
@@ -159,7 +164,7 @@ class Line(object):
         self.tiles = tiles
         for tile in tiles:
             tile.set_line(self)
-        self.tiles[0].set_end_of_line(True)
+        self.tiles[0].set_end(True)
         self.recruiter_speed = wait_time
         self.progress = 0
         self.current_talker = None
@@ -186,10 +191,17 @@ class Line(object):
     def delegate(self, line):
         """Delegates the bots into the lines."""
         last_tile = self.tiles[-1]
+        end = False
         for tile in self.tiles:
             if tile == last_tile:
+                if line:
                 tile.update_line(line)
             else:
                 mini_line = line[:self.max_per_tile]
                 line = line[self.max_per_tile:]
+                if len(mini_line) < self.max_per_tile and (not end):
+                    end = True
+                    tile.set_end(True)
+                else:
+                    tile.set_end(False)
                 tile.update_line(mini_line)
