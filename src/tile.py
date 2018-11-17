@@ -137,6 +137,10 @@ class Booth(object):
             tile.set_booth(self)
         self.lines = [Line(self.name, line, wait_time) for line in lines]
 
+    def get_size(self):
+        """Gets the size of the company."""
+        return self.size
+
     def execute_step(self):
         """Executes steps for lines."""
         for line in self.lines:
