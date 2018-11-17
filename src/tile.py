@@ -14,7 +14,7 @@ class Tile(object):
         self.loc = (x, y)
         self.bots_in_line = []
         self.bots = []
-        self.end_of_line = false
+        self.end_of_line = False
         self.line = None
         self.booth = None
         self.threshold = max
