@@ -173,6 +173,7 @@ class Line(object):
         self.progress = 0
         self.current_talker = None
         self.max_per_tile = max_per_tile
+        self.end_of_line = tiles[0]
 
     def execute_step(self):
         """Compresses the line, updates the talker, and redelegates lines."""
@@ -205,7 +206,12 @@ class Line(object):
                 line = line[self.max_per_tile:]
                 if len(mini_line) < self.max_per_tile and (not end):
                     end = True
+                    self.end_of_line = tile
                     tile.set_end(True)
                 else:
                     tile.set_end(False)
                 tile.update_line(mini_line)
+
+    def get_end(self):
+        """Returns the tile that is the end of the line."""
+        return self.end_of_line
