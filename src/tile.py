@@ -166,9 +166,7 @@ class Line(object):
         self.max_per_tile = max_per_tile
 
     def execute_step(self):
-        self.update_line()
-
-    def update_line(self):
+        """Compresses the line, updates the talker, and redelegates lines."""
         full_line = []
         for tile in self.tiles:
             full_line += tile.get_bots_in_line()
@@ -178,6 +176,7 @@ class Line(object):
                 self.progress += 1
                 if self.progress >= self.recruiter_speed:
                     full_line.pop(0)
+                    # Should do some scoring stuff here!
         try:
             self.current_talker = full_line[0]
         except:
@@ -185,6 +184,7 @@ class Line(object):
         self.delegate(full_line)
 
     def delegate(self, line):
+        """Delegates the bots into the lines."""
         last_tile = self.tiles[-1]
         for tile in self.tiles:
             if tile == last_tile:
