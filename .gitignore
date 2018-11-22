@@ -114,15 +114,6 @@ dmypy.json
 \.vscode/
 
 # bazel settings
-/bazel.iml
-/bazel-awap2019
-/output/
-bazel
-bazel-src
-bazel-bazel-test
-bazel-bin
-bazel-genfiles
-bazel-out
-bazel-testlogs
-bazel-vagrant
-bazel-bazel-example
+src/bazel.iml
+src/bazel-*
+src/output/
