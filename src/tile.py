@@ -1,4 +1,41 @@
-class Tile(object):
+class UserTile(object):
+    def __init__(self,x,y):
+        self.loc = (x, y)
+        self.bots_in_line = []
+        self.bots = []
+        self.end_of_line = False
+        self.line = False
+        self.booth = False
+        self.is_visible = False
+
+    def get_location(self):
+        return self.loc
+
+    def get_visibility(self):
+        return self.is_visible
+
+    def set_visibility(self, value):
+        self.is_visible = value
+
+    def is_booth(self):
+        return self.booth
+
+    def set_booth(self, value):
+        self.booth = value
+
+    def set_bots_in_line(self, ar):
+        self.bots_in_line = ar
+
+    def set_bots(self, ar):
+        self.bots = ar
+
+    def set_end_of_line(self, value):
+        self.end_of_line = value
+
+    def set_line(self, value):
+        self.line = value
+
+class Tile(UserTile):
     """ Tile keeps track of everything on a tile.
 
     loc: the lattice position of the tile
@@ -11,12 +48,8 @@ class Tile(object):
     threshold: progress needed to move into this tile
     """
     def __init__(self, x, y, max):
-        self.loc = (x, y)
-        self.bots_in_line = []
-        self.bots = []
-        self.end_of_line = false
-        self.line = None
-        self.booth = None
+        super().__init__(x,y)
+        #self.is_visible is not used in this sub-class
         self.threshold = max
 
     def compute_step(self, board):
@@ -88,6 +121,9 @@ class Tile(object):
 
     def get_bots_in_line(self):
         return self.bots_in_line
+
+    def get_bots(self):
+        return self.bots
 
     def remove_from_tile(self, bot):
         """Attempts to remove bot from tile. True if successful."""

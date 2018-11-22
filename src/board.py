@@ -73,6 +73,9 @@ class Board(object):
         # type(self.num_companies) = dictionary where each entry has an
         #     integer corresponding to the number of booths it has
         # type(self.board) = numpy.ndarray (2D Array)
+        self.board = None
+        self.company_infos = []
+        self.booths = []
         self.parse(company_config_file, board_config_file)
 
     def parse(self, company_config_file, board_config_file):
@@ -309,3 +312,38 @@ class Board(object):
 
     def set_lines(self, lines):
         pass
+
+    def check_if_visible(bot_locs, cur_loc):
+        if cur_loc in bot_locs:
+            return True
+        for bot_loc in bot_locs:
+            if bot_loc[0]-1 <= cur_loc[0] <= bot_loc[0]+1
+                        and bot_loc[1]-1 <= cur_loc[1] <= bot_loc[1]+1:
+                return True
+        return False
+
+    def generate_user_board(self):
+        num_rows, num_cols = self.board.shape
+        player_bot_locations = get_player_bot_locations() ##NEED TO FIX
+        ###USE GETTER FUNCTION FROM BOARD CLASS TO GET BOT LOCALS
+        visible_board = np.zeros((num_rows, num_cols))
+        if self.board is None:
+            return None
+
+        for row in range(num_rows):
+            for col in range(num_cols):
+                cur_tile = self.board[row][col]
+                cur_tile_loc = cur_tile.get_location()
+                visible_board[row][col] = UserTile(row,col)
+                new_user_tile = visible_board[row][col]
+                if cur_tile.is_booth(): #check if current tile is a booth
+                    new_user_tile.set_booth(True)
+                if check_if_visible(player_bot_locations, tile.get_location()):
+                    #checks if the tile should be visible to user
+                    new_user_tile.set_visibility(True)
+                if new_user_tile.get_visibility():
+                    new_user_tile.set_bots_in_line(cur_tile.get_bots_in_line())
+                    new_user_tile.set_bots(cur_tile.get_bots())
+                    new_user_tile.set_end_of_line(cur_tile.get_end())##
+                    new_user_tile.set_line(cur_tile.get_line())
+        return visible_board
