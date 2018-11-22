@@ -4,4 +4,4 @@ Repository for AWAP 2019 game development.
 
 ## Setup
 
-Requires numpy and absl-py. Uses Bazel for compilation.
+Requires numpy and absl-py.
