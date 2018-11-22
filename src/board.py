@@ -1,12 +1,12 @@
-from tile.py import *
+from tile import Tile, Booth, Line
 import numpy as np
 
 class Board(object):
     def __init__(self, length, width):
         self.num_companies = getCompanyNumber(self, file)
         self.board = [][]
-        '''need to change this implementation -- may have MORE than 1 line per
-        booth '''
+        """need to change this implementation -- may have MORE than 1 line per
+        booth"""
         self.allLines = []
         self.allBooth = [] #index corresponds to unique company number
         parse()
@@ -59,25 +59,21 @@ class Board(object):
             F :: free tile
             X :: blocked off, unaccessable
         @param file: the config File
-        @ensures: '''rewrite me'''
+        @ensures: rewrite me
         """
         with open(file, 'r') as f:
             dimensions = f.readline().strip().split(' ')
             rows = int(dimensions[0])
             columns = int(dimensions[1])
-
-            '''
             checked in getCompanyNumber
             if (rows <= 0 or cols <= 0):
                 print('Invalid dimensions', file=sys.stderr)
-                sys.exit'''
+                sys.exit
             self.board = np.zeros((rows, columns))
             for i in range(rows):
                 for j in range(cols):
                     self.board[i][j] = Tile(x, y)
             try:
-                ''' create all lines and booths at once and just add tiles to
-                    them '''
                 for eachCompany in range(self.num_companies):
                     self.allLines.append(Line(str(eachCompany), [], 0))
 

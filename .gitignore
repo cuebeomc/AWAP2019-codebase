@@ -112,3 +112,8 @@ dmypy.json
 
 # vscode workspace settings
 \.vscode/
+
+# bazel settings
+/bazel.iml
+/bazel-*
+/output/
