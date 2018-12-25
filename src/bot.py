@@ -1,44 +1,70 @@
-import abc
+from direction import Direction
 
 class Bot(object):
-    __metaclass__ = abc.ABCMeta
 
-    def __init__(self, position, step_gain, speed):
-        self.tile = position
-        self.step_gain = step_gain
+    def __init__(self, board, loc, speed):
+        """Initializes a basic bot."""
+        self.loc = loc
+        board.grid[loc[0]][loc[1]].add_bot(self)
+        self.board = board
         self.progress = 0
-        self.dest_tile = None
         self.speed = speed
+        self.type = None
 
-    def update_progress(self):
-        check_sane(self.dest_tile)
-        if self.progress >= self.dest_tile.threshold:
-            self.tile = self.dest_tile
-            # TODO(Cuebeom): Update bots in tile class
-            self.progress = 0
-            self.dest_tile = None
-        else:
-            self.progress += self.speed
+        self.direction = Direction.NONE
+        self.new_direction = Direction.NONE
 
-    @abc.abstractmethod
-    def compute_step(self, board):
-        """
-        Bot should set dest_tile
-        """
+    def copy(self):
+        new_bot = Bot(None, self.loc, self.speed)
+        new_bot.progress = self.progress
+        new_bot.type = self.type
+
+        new_bot.direction = self.direction
+        new_bot.new_direction = self.new_direction
+
+        return new_bot
+
+    def get_loc(self):
+        return self.loc
+
+    def set_new_direction(self, dir):
+        # Should check that dir is a type defined by Direction
+        self.new_direction = dir
+
+    def compute_step(self):
+        """Computes the next step and places it into self.new_direction."""
         raise "You must implement compute_step"
 
-    def compute_progress(self, board):
-        old_dest = self.dest_tile
-        compute_step(self,board)
-        check_sane(self.dest_tile)
-        if old_dest != self.dest_tile:
+    def update_progress(self):
+        """Updates the movement progress of the bot."""
+        if self.direction == Direction.NONE:
+            self.progress = 0
+            return
+        self.progress += self.speed
+        new_loc = (self.direction).get_loc(self.loc)
+        dest_tile = (self.board).get(new_loc)
+        if self.progress >= dest_tile.get_threshold():
+            curr_tile = (self.board).get(self.loc)
+            curr_tile.remove_from_tile(self)
+            dest_tile.add_to_tile(self)
+            self.loc = new_loc
             self.progress = 0
 
-    def execute_step(self, board, new_dest=None):
-        if new_dest is not None:
-            check_sane(new_dest)
-            self.tile = new_dest
-            self.dest_tile = None
+    def execute_step(self):
+        """Executes the computed step, if valid."""
+        if self.new_direction != self.direction:
+            if not self._is_valid():
+                self.new_direction = Direction.NONE
+            self.direction = self.new_direction
             self.progress = 0
-        elif dest_tile is not None:
-            update_progress(self)
+        self.update_progress()
+
+    def _is_valid(self):
+        new_loc = (self.new_direction).get_loc(self.loc)
+        if (0 <= new_loc[0] < (self.board).x_dim() and
+           0 <= new_loc[1] < (self.board).y_dim()):
+            dest_tile = (self.board).get(new_loc)
+            print(dest_tile)
+            if not dest_tile.get_booth():
+                return True
+        return False
