@@ -132,7 +132,7 @@ class Board(object):
     def _random_time(self, size):
         """Picks a random time. Currently 10, will change if we decide to add
         random times."""
-        return 10
+        return 1
 
     def _parse(self, file_path):
         """Parses a config file into a grid of tiles and booths."""

@@ -52,6 +52,12 @@ class Bot(object):
         if self.direction == Direction.NONE:
             self.progress = 0
             return
+        elif self.direction == Direction.ENTER:
+            print("Entering line.")
+            self.progress = 0
+            self.board.get(self.loc).add_to_line(self)
+            self.direction = Direction.NONE
+            return
         self.progress += self.speed
         new_loc = (self.direction).get_loc(self.loc)
         dest_tile = (self.board).get(new_loc)

@@ -66,7 +66,7 @@ class Tile(object):
     # Functions that will only be available to the internal game mechanics.
     def update_threshold(self):
         """TODO: Add mathematical formula!"""
-        return 5
+        return 2
 
     def get_bots_in_line(self):
         return self.bots_in_line
@@ -89,8 +89,9 @@ class Tile(object):
 
     def add_to_line(self, bot):
         if self.end_of_line and bot in self.bots:
+            print("Entered line successfully.")
             (self.bots_in_line).append(bot)
-            self.remove_bot()
+            self.remove_bot(bot)
 
     def copy(self):
         new_tile = Tile(self.loc[0], self.loc[1])
@@ -173,7 +174,8 @@ class Line(object):
                 if self.progress >= self.wait_time:
                     full_line.pop(0)
                     self.progress = 0
-                    tiles[0].add_bot(self.current_talker)
+                    self.tiles[0].add_bot(self.current_talker)
+                    print("TALKED TO RECRUITER")
                     # Should do some scoring stuff here!
             else:
                 self.progress = 0
