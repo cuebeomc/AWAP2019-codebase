@@ -6,11 +6,19 @@
 
 # Check and debug code!!
 
+DEBUG = True
+
 from tile import Tile, Booth, Line
 from bot import Bot
 import numpy as np
 
+# FOR PRINT PURPOSES ONLY. GET RID OF AFTERWARDS
+if DEBUG:
+    from pandas import *
+
 import random
+
+TEAM_SIZE = 5
 
 class Board(object):
     """
@@ -58,7 +66,7 @@ class Board(object):
             # First bot in this list is main bot by standard.
             # No scoring mechanism has been created yet to prioritize first bot.
             # Will be done when UID's are added as well.
-            team_i = [Bot(self, self.start, 2) for _ in range(3)]
+            team_i = [Bot(self, self.start, 2) for _ in range(TEAM_SIZE)]
             (self.player_bots).append(team_i)
 
     def x_dim(self):
@@ -87,6 +95,8 @@ class Board(object):
         for booth in self.booths:
             booth.execute_step()
 
+        if DEBUG:
+            print(DataFrame(self.grid))
         self._update_board()
 
     def get_visible_locs(self, team):

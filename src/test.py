@@ -3,23 +3,24 @@ from game import Game
 
 g = Game("config.txt", "companies.txt")
 
+team_size = 5
 moves = [Direction.NONE, Direction.NONE, Direction.NONE]
 for booth in g.board.booths:
     print(booth.name)
 for i in range(100):
     user_input = input("Movement: ")
     if user_input == 'left':
-        moves = [Direction.LEFT] * 3
+        moves = [Direction.LEFT] * team_size
     elif user_input == 'right':
-        moves = [Direction.RIGHT] * 3
+        moves = [Direction.RIGHT] * team_size
     elif user_input == 'up':
-        moves = [Direction.UP] * 3
+        moves = [Direction.UP] * team_size
     elif user_input == 'down':
-        moves = [Direction.DOWN] * 3
+        moves = [Direction.DOWN] * team_size
     elif user_input == 'enter':
-        moves = [Direction.ENTER] * 3
+        moves = [Direction.ENTER] * team_size
     else:
-        moves = [Direction.NONE] * 3
+        moves = [Direction.NONE] * team_size
 
     visible_board = g.make_move([moves])
     player_board, positions = visible_board[0]

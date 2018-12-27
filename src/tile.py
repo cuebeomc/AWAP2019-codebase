@@ -22,10 +22,10 @@ class Tile(object):
         self.threshold = self.update_threshold()
 
     def __str__(self):
-        return "Tile{}".format(self.loc)
+        return "({}, {})".format(len(self.bots), len(self.bots_in_line))
 
     def __repr__(self):
-        return "Tile{}".format(self.loc)
+        return "({}, {})".format(len(self.bots), len(self.bots_in_line))
 
     # Getters that are available to players.
     def is_part_of_line(self):
