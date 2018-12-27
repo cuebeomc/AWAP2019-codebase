@@ -1,17 +1,16 @@
 # THINGS TO DO
 
-# Add company picker/randomizer
 # Add bot replacement technique for players
 # Make an overall game sequence in game.py
 # Add scoring mechanism
 
-# ADD TYPECHECK AND INPUT CHECKING MECHANISMS
-# MAKE SURE NO MALICIOUS CODE CAN KILL THE GAME
-
 # Check and debug code!!
 
 from tile import Tile, Booth, Line
+from bot import Bot
 import numpy as np
+
+import random
 
 class Board(object):
     """
@@ -20,11 +19,11 @@ class Board(object):
     F  M3 M3 M3 M4 M4 M4 F
     S0  0 E0  3 E5  4  F F
     S0 E1 E2  3  5  4  F F
-    S1  1  2  3  5  4  F F
+    S1  1  2  3  5  4  F B
     S1  F  2 E3  5 E4  F F
     F  S2 S2 L5 L5 L5 L5 F
     """
-    def __init__(self, file):
+    def __init__(self, config_file, company_file):
         """Initializes the Board class.
 
         grid: Grid of tiles
@@ -36,18 +35,31 @@ class Board(object):
         """
         self.grid = []
         self.booths = []
-        self.players = 1
+        self.dim = (None, None)
+        self.company_list = {'S': set(), 'M': set(), 'L': set()}
+
         self.player_bots = []
         self.bots = []
-        self.dim = (None, None)
-        self._parse(file)
+        self.players = 1
+        self.start = None
+
+        self._parse_companies(company_file)
+        self._parse(config_file)
 
     def init_bots(self, multiplayer):
-        """Places the bots onto the board."""
+        """Places the bots onto the board.
+
+        NOTE: I plan on adding unique ID's to each bot, especially each player
+        bot to make visualization easier."""
         if multiplayer:
             self.players = 2
         # Do the initialization of multiple bots/place them!
-        # Initialize the player bots!
+        for i in range(self.players):
+            # First bot in this list is main bot by standard.
+            # No scoring mechanism has been created yet to prioritize first bot.
+            # Will be done when UID's are added as well.
+            team_i = [Bot(self, self.start, 2) for _ in range(3)]
+            (self.player_bots).append(team_i)
 
     def x_dim(self):
         return self.dim[0]
@@ -75,7 +87,10 @@ class Board(object):
         for booth in self.booths:
             booth.execute_step()
 
+        self._update_board()
+
     def get_visible_locs(self, team):
+        """Gets the visible locations for the specified team."""
         visible_locs = set()
         team_bots = self.player_bots[team]
         for bot in team_bots:
@@ -85,6 +100,39 @@ class Board(object):
                     if 0 <= i < self.dim[0] and 0 <= j < self.dim[1]:
                         visible_locs.add((i, j))
         return list(visible_locs)
+
+    def get_positions(self, team):
+        """Gets the positions of the bots in the team."""
+        team_bots = self.player_bots[team]
+        return [bots.get_loc() for bots in team_bots]
+
+    def _update_board(self):
+        """Updates the thresholds."""
+        for row in self.grid:
+            for tile in row:
+                tile.update_threshold()
+
+    def _parse_companies(self, file_path):
+        """Parses the company file."""
+        file = open(file_path, "r")
+        for line in file:
+            split_line = line.split()
+            company, size = split_line[0], split_line[1]
+            self.company_list[size].add(company)
+
+    def _pick_company(self, size):
+        """Picks a company from the list of all companies."""
+        companies = self.company_list[size]
+        if len(companies) < 0:
+            raise "Not enough companies"
+        chosen = random.sample(companies, 1)[0]
+        companies.remove(chosen)
+        return chosen
+
+    def _random_time(self, size):
+        """Picks a random time. Currently 10, will change if we decide to add
+        random times."""
+        return 10
 
     def _parse(self, file_path):
         """Parses a config file into a grid of tiles and booths."""
@@ -125,6 +173,8 @@ class Board(object):
                         number = int(tile[1:])
                         curr_line = line_tiles[number]
                         curr_line.insert(0, self.grid[r][c])
+                    elif letter == 'B':
+                        self.start = (r, c)
                     elif letter != 'F':
                         number = int(tile)
                         curr_line = line_tiles[number]
@@ -132,10 +182,6 @@ class Board(object):
                     c += 1
                 r += 1
         for size, b_tiles, l_tiles in zip(sizes, booth_tiles, line_tiles):
-        #    name = pick_company()
-        #    time = random_time(size)
-            name = "test"
-            time = 5
+            name = self._pick_company(size)
+            time = self._random_time(size)
             (self.booths).append(Booth(name, size, b_tiles, l_tiles, time))
-
-        return

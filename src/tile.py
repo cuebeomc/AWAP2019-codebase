@@ -79,6 +79,7 @@ class Tile(object):
 
     def add_bot(self, bot):
         (self.bots).append(bot)
+        bot.set_loc(self.loc)
 
     def remove_bot(self, bot):
         try:

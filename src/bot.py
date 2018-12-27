@@ -4,8 +4,10 @@ class Bot(object):
 
     def __init__(self, board, loc, speed):
         """Initializes a basic bot."""
-        self.loc = loc
-        board.grid[loc[0]][loc[1]].add_bot(self)
+        if board:
+            (board.get(loc)).add_bot(self)
+        else:
+            self.loc = loc
         self.board = board
         self.progress = 0
         self.speed = speed
@@ -15,6 +17,7 @@ class Bot(object):
         self.new_direction = Direction.NONE
 
     def copy(self):
+        """Generate a copy of the bot for player copy."""
         new_bot = Bot(None, self.loc, self.speed)
         new_bot.progress = self.progress
         new_bot.type = self.type
@@ -24,12 +27,21 @@ class Bot(object):
 
         return new_bot
 
+    def set_loc(self, loc):
+        """DANGEROUS: do not use except in tile.py"""
+        self.loc = loc
+
     def get_loc(self):
+        """Returns the location of the bot."""
         return self.loc
 
     def set_new_direction(self, dir):
-        # Should check that dir is a type defined by Direction
-        self.new_direction = dir
+        """Set the direction of this bot if it is valid. Only should be used
+        when setting direction specified from the player."""
+        if type(dir) != Direction:
+            self.new_direction = Direction.NONE
+        else:
+            self.new_direction = dir
 
     def compute_step(self):
         """Computes the next step and places it into self.new_direction."""
@@ -45,9 +57,9 @@ class Bot(object):
         dest_tile = (self.board).get(new_loc)
         if self.progress >= dest_tile.get_threshold():
             curr_tile = (self.board).get(self.loc)
-            curr_tile.remove_from_tile(self)
-            dest_tile.add_to_tile(self)
-            self.loc = new_loc
+            curr_tile.remove_bot(self)
+            dest_tile.add_bot(self)
+            self.direction = Direction.NONE
             self.progress = 0
 
     def execute_step(self):
@@ -60,11 +72,12 @@ class Bot(object):
         self.update_progress()
 
     def _is_valid(self):
+        """Checks if self.new_direction is a valid direction."""
         new_loc = (self.new_direction).get_loc(self.loc)
+        print("New expected location: {}".format(new_loc))
         if (0 <= new_loc[0] < (self.board).x_dim() and
            0 <= new_loc[1] < (self.board).y_dim()):
             dest_tile = (self.board).get(new_loc)
-            print(dest_tile)
             if not dest_tile.get_booth():
                 return True
         return False

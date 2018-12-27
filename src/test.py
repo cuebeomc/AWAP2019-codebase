@@ -1,9 +1,12 @@
-from board import Board
 from direction import Direction
-from bot import Bot
+from game import Game
 
-b = Board("config.txt")
-p1 = Bot(b, (1, 1), 2)
-b.player_bots = [[p1]]
-b.step([[Direction.LEFT]])
-print(p1.progress)
+g = Game("config.txt", "companies.txt")
+
+moves = [Direction.LEFT, Direction.UP, Direction.RIGHT]
+for booth in g.board.booths:
+    print(booth.name)
+for i in range(100):
+    visible_board = g.make_move([moves])
+    player_board, positions = visible_board[0]
+    print(positions)
