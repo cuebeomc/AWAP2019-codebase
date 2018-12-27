@@ -6,19 +6,14 @@
 
 # Check and debug code!!
 
-DEBUG = True
 
-from tile import Tile, Booth, Line
-from bot import Bot
+from .tile import Tile, Booth, Line
+from .bot import Bot
 import numpy as np
-
-# FOR PRINT PURPOSES ONLY. GET RID OF AFTERWARDS
-if DEBUG:
-    from pandas import *
 
 import random
 
-TEAM_SIZE = 13
+TEAM_SIZE = 3
 
 class Board(object):
     """
@@ -31,7 +26,7 @@ class Board(object):
     S1  F  2 E3  5 E4  F F
     F  S2 S2 L5 L5 L5 L5 F
     """
-    def __init__(self, config_file, company_file):
+    def __init__(self, config_file, company_file, debug):
         """Initializes the Board class.
 
         grid: Grid of tiles
@@ -54,11 +49,13 @@ class Board(object):
         self._parse_companies(company_file)
         self._parse(config_file)
 
+        self.debug = debug
+
     def init_bots(self, multiplayer):
         """Places the bots onto the board.
 
-        NOTE: I plan on adding unique ID's to each bot, especially each player
-        bot to make visualization easier."""
+        NOTE: Scoring is not yet implemented, but it will use the UID given
+        to each bot to correctly assign points."""
         if multiplayer:
             self.players = 2
         # Do the initialization of multiple bots/place them!
@@ -71,7 +68,6 @@ class Board(object):
                 team_i.append(Bot(self, self.start, 2, id))
                 id += 1
             (self.player_bots).append(team_i)
-
         # Do the initialization of multiple bots/place them!
 
     def x_dim(self):
@@ -100,8 +96,8 @@ class Board(object):
         for booth in self.booths:
             booth.execute_step()
 
-        if DEBUG:
-            print(DataFrame(self.grid))
+        if self.debug:
+            print(np.matrix(self.grid))
         self._update_board()
 
     def get_visible_locs(self, team):

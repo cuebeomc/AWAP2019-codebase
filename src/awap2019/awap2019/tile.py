@@ -1,5 +1,3 @@
-import copy
-
 class Tile(object):
     """ Tile keeps track of everything on a tile.
 
@@ -91,7 +89,6 @@ class Tile(object):
 
     def add_to_line(self, bot):
         if self.end_of_line and bot in self.bots:
-            print("Entered line successfully.")
             (self.bots_in_line).append(bot)
             self.remove_bot(bot)
 
@@ -188,7 +185,6 @@ class Line(object):
 
     def _delegate(self, line):
         """Delegates the bots into the lines."""
-        print("Delegating line {}".format(line))
         last_tile = self.tiles[-1]
         end = False
         for tile in self.tiles:
@@ -204,7 +200,6 @@ class Line(object):
                 else:
                     tile.set_end_of_line(False)
                 tile.update_line(mini_line)
-            print("Bots in this tile: {}".format(tile.bots_in_line))
 
     def _order(self, tiles):
         if len(tiles) <= 1:

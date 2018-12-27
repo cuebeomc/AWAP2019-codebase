@@ -1,4 +1,4 @@
-from direction import Direction
+from .direction import Direction
 
 class Bot(object):
 
@@ -87,7 +87,6 @@ class Bot(object):
     def _is_valid(self):
         """Checks if self.new_direction is a valid direction."""
         new_loc = (self.new_direction).get_loc(self.loc)
-        print("New expected location: {}".format(new_loc))
         if (0 <= new_loc[0] < (self.board).x_dim() and
            0 <= new_loc[1] < (self.board).y_dim()):
             dest_tile = (self.board).get(new_loc)

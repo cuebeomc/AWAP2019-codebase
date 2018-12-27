@@ -1,10 +1,10 @@
-from board import Board
+from .board import Board
 
 class Game(object):
-    def __init__(self, config_file, companies, multiplayer=False):
+    def __init__(self, config_file, companies, multiplayer, debug):
         """Initialize a game instance."""
         self.multiplayer = multiplayer
-        self.board = Board(config_file, companies)
+        self.board = Board(config_file, companies, debug)
         self._copy()
         (self.board).init_bots(multiplayer)
 
@@ -21,7 +21,7 @@ class Game(object):
             new_grid.append(new_row)
         self.basic_grid = new_grid
 
-    def generate_player_copy(self, team):
+    def generate_player_copy(self, team=0, init=False):
         """Uses the basic grid and the visible locations to generate a new
         grid with tiles from basic grid if not visible and tiles from the
         board if visible. Should use copied tiles if visible."""
@@ -32,10 +32,10 @@ class Game(object):
             new_row = []
             for tile in row:
                 loc = tile.get_loc()
-                if loc in visible_locs:
+                if loc in visible_locs and not init:
                     new_row.append(tile.copy())
                 else:
-                    new_row.append(self.basic_grid[loc[0]][loc[1]])
+                    new_row.append((self.basic_grid[loc[0]][loc[1]]).copy())
             player_copy.append(new_row)
         return player_copy, team_positions
 

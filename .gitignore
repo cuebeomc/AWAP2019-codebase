@@ -7,6 +7,7 @@ __pycache__/
 *.so
 
 # Distribution / packaging
+code/
 .Python
 build/
 develop-eggs/
@@ -113,7 +114,5 @@ dmypy.json
 # vscode workspace settings
 \.vscode/
 
-# bazel settings
-src/bazel.iml
-src/bazel-*
-src/output/
+# Mac settings
+.DS_Store
