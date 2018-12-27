@@ -18,7 +18,7 @@ if DEBUG:
 
 import random
 
-TEAM_SIZE = 5
+TEAM_SIZE = 13
 
 class Board(object):
     """
@@ -62,12 +62,17 @@ class Board(object):
         if multiplayer:
             self.players = 2
         # Do the initialization of multiple bots/place them!
+        id = 0
         for i in range(self.players):
             # First bot in this list is main bot by standard.
             # No scoring mechanism has been created yet to prioritize first bot.
-            # Will be done when UID's are added as well.
-            team_i = [Bot(self, self.start, 2) for _ in range(TEAM_SIZE)]
+            team_i = []
+            for _ in range(TEAM_SIZE):
+                team_i.append(Bot(self, self.start, 2, id))
+                id += 1
             (self.player_bots).append(team_i)
+
+        # Do the initialization of multiple bots/place them!
 
     def x_dim(self):
         return self.dim[0]

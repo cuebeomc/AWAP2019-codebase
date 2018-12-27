@@ -76,6 +76,8 @@ class Tile(object):
 
     def update_line(self, line):
         self.bots_in_line = line
+        for bot in line:
+            bot.set_loc(self.loc)
 
     def add_bot(self, bot):
         (self.bots).append(bot)
@@ -85,7 +87,7 @@ class Tile(object):
         try:
             (self.bots).remove(bot)
         except:
-            pass
+            (self.bots_in_line).remove(bot)
 
     def add_to_line(self, bot):
         if self.end_of_line and bot in self.bots:
@@ -186,12 +188,12 @@ class Line(object):
 
     def _delegate(self, line):
         """Delegates the bots into the lines."""
+        print("Delegating line {}".format(line))
         last_tile = self.tiles[-1]
         end = False
         for tile in self.tiles:
             if tile == last_tile:
-                if line:
-                    tile.update_line(line)
+                tile.update_line(line)
             else:
                 mini_line = line[:self.max_per_tile]
                 line = line[self.max_per_tile:]
@@ -202,6 +204,7 @@ class Line(object):
                 else:
                     tile.set_end_of_line(False)
                 tile.update_line(mini_line)
+            print("Bots in this tile: {}".format(tile.bots_in_line))
 
     def _order(self, tiles):
         if len(tiles) <= 1:

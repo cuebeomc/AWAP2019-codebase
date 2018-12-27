@@ -2,7 +2,7 @@ from direction import Direction
 
 class Bot(object):
 
-    def __init__(self, board, loc, speed):
+    def __init__(self, board, loc, speed, id):
         """Initializes a basic bot."""
         if board:
             (board.get(loc)).add_bot(self)
@@ -12,13 +12,20 @@ class Bot(object):
         self.progress = 0
         self.speed = speed
         self.type = None
+        self.id = id
 
         self.direction = Direction.NONE
         self.new_direction = Direction.NONE
 
+    def __str__(self):
+        return "{}: {}".format(self.id, self.loc)
+
+    def __repr__(self):
+        return "{}: {}".format(self.id, self.loc)
+
     def copy(self):
         """Generate a copy of the bot for player copy."""
-        new_bot = Bot(None, self.loc, self.speed)
+        new_bot = Bot(None, self.loc, self.speed, self.id)
         new_bot.progress = self.progress
         new_bot.type = self.type
 

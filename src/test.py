@@ -3,7 +3,7 @@ from game import Game
 
 g = Game("config.txt", "companies.txt")
 
-team_size = 5
+team_size = 13
 moves = [Direction.NONE, Direction.NONE, Direction.NONE]
 for booth in g.board.booths:
     print(booth.name)
