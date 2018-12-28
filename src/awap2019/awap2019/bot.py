@@ -2,7 +2,7 @@ from .direction import Direction
 
 class Bot(object):
 
-    def __init__(self, board, loc, speed, id):
+    def __init__(self, board, loc, speed, id, team_id=None):
         """Initializes a basic bot."""
         if board:
             (board.get(loc)).add_bot(self)
@@ -13,6 +13,7 @@ class Bot(object):
         self.speed = speed
         self.type = None
         self.id = id
+        self.team = team_id
 
         self.direction = Direction.NONE
         self.new_direction = Direction.NONE
@@ -33,6 +34,12 @@ class Bot(object):
         new_bot.new_direction = self.new_direction
 
         return new_bot
+
+    def get_id(self):
+        return self.id
+
+    def get_team_id(self):
+        return self.team
 
     def set_loc(self, loc):
         """DANGEROUS: do not use except in tile.py"""

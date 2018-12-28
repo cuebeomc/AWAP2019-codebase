@@ -1,8 +1,6 @@
 # THINGS TO DO
 
 # Add bot replacement technique for players
-# Make an overall game sequence in game.py
-# Add scoring mechanism
 
 # Check and debug code!!
 
@@ -12,8 +10,6 @@ from .bot import Bot
 import numpy as np
 
 import random
-
-TEAM_SIZE = 3
 
 class Board(object):
     """
@@ -26,7 +22,7 @@ class Board(object):
     S1  F  2 E3  5 E4  F F
     F  S2 S2 L5 L5 L5 L5 F
     """
-    def __init__(self, config_file, company_file, debug):
+    def __init__(self, config_file, company_file, debug, team_size):
         """Initializes the Board class.
 
         grid: Grid of tiles
@@ -36,10 +32,13 @@ class Board(object):
                      a list of 4 bots that correlate to its index's player #.
         dim: The dimensions of the board.
         """
+        self.team_size = team_size
+
         self.grid = []
         self.booths = []
         self.dim = (None, None)
         self.company_list = {'S': set(), 'M': set(), 'L': set()}
+        self.chosen_companies = set()
 
         self.player_bots = []
         self.bots = []
@@ -59,16 +58,15 @@ class Board(object):
         if multiplayer:
             self.players = 2
         # Do the initialization of multiple bots/place them!
-        id = 0
         for i in range(self.players):
             # First bot in this list is main bot by standard.
             # No scoring mechanism has been created yet to prioritize first bot.
             team_i = []
-            for _ in range(TEAM_SIZE):
-                team_i.append(Bot(self, self.start, 2, id))
-                id += 1
+            for j in range(self.team_size):
+                team_i.append(Bot(self, self.start, 2, j, team_id=i))
             (self.player_bots).append(team_i)
-        # Do the initialization of multiple bots/place them!
+        # TODO: Initialize the crowd!
+        start_id = self.team_size
 
     def x_dim(self):
         return self.dim[0]
@@ -93,12 +91,29 @@ class Board(object):
         for team in self.player_bots:
             for bot in team:
                 bot.execute_step()
+
+        talked_booths = []
         for booth in self.booths:
-            booth.execute_step()
+            val = booth.execute_step()
+            if val:
+                talked_booths.append(val)
+        updated_scores = self._score(talked_booths)
 
         if self.debug:
             print(np.matrix(self.grid))
         self._update_board()
+        return updated_scores
+
+    def _score(self, talked):
+        scores = [0] * self.players
+        for name, team_id, id in talked:
+            # Change these values to add prioritization for
+            # certain companies!
+            if id == 0:
+                scores[team_id] += 2
+            else:
+                scores[team_id] -= 1
+        return scores
 
     def get_visible_locs(self, team):
         """Gets the visible locations for the specified team."""
@@ -138,6 +153,7 @@ class Board(object):
             raise "Not enough companies"
         chosen = random.sample(companies, 1)[0]
         companies.remove(chosen)
+        self.chosen_companies.add(chosen)
         return chosen
 
     def _random_time(self, size):

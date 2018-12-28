@@ -1,12 +1,14 @@
 from .board import Board
 
 class Game(object):
-    def __init__(self, config_file, companies, multiplayer, debug):
+    def __init__(self, config_file, companies, multiplayer, debug, team_size):
         """Initialize a game instance."""
-        self.multiplayer = multiplayer
-        self.board = Board(config_file, companies, debug)
+        self.players = 2 if multiplayer else 1
+        self.board = Board(config_file, companies, debug, team_size)
         self._copy()
         (self.board).init_bots(multiplayer)
+
+        self.scoreboard = [0] * self.players
 
     def _copy(self):
         """Copies the given board into a basic grid for player use."""
@@ -25,7 +27,6 @@ class Game(object):
         """Uses the basic grid and the visible locations to generate a new
         grid with tiles from basic grid if not visible and tiles from the
         board if visible. Should use copied tiles if visible."""
-        team_positions = (self.board).get_positions(team)
         visible_locs = (self.board).get_visible_locs(team)
         player_copy = []
         for row in self.board.grid:
@@ -37,12 +38,13 @@ class Game(object):
                 else:
                     new_row.append((self.basic_grid[loc[0]][loc[1]]).copy())
             player_copy.append(new_row)
-        return player_copy, team_positions
+        return player_copy
 
     def make_move(self, moves):
         """Update for multiplayer use later."""
-        (self.board).step(moves)
-        players = 1
-        if self.multiplayer:
-            players = 2
-        return [self.generate_player_copy(i) for i in range(players)]
+        updated_scores = (self.board).step(moves)
+        for i, score in enumerate(updated_scores):
+            self.scoreboard[i] += score
+
+        return [(self.generate_player_copy(i), (self.board).get_positions(i),
+                self.scoreboard[i]) for i in range(self.players)]

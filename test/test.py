@@ -14,6 +14,9 @@ from awap2019 import Direction, Game
 from absl import flags
 from absl import app
 
+from player1.team import Team as P1
+from player2.team import Team as P2
+
 FLAGS = flags.FLAGS
 flags.DEFINE_boolean('m', False, 'Play in multiplayer mode.')
 flags.DEFINE_integer('num_moves', 300, 'The number of moves in a game.')
@@ -22,11 +25,11 @@ flags.DEFINE_string('config', 'config.txt', 'The path to the config file.')
 flags.DEFINE_string('companies', 'companies.txt', 'The path to the list of '
                                                   'companies.')
 flags.DEFINE_boolean('debug', False, 'Debug mode')
-from player1.team import Team as P1
-from player2.team import Team as P2
+flags.DEFINE_integer('team_size', 3, 'The team size.')
 
 def main(_):
-    g = Game(FLAGS.config, FLAGS.companies, FLAGS.m, FLAGS.debug)
+    g = Game(FLAGS.config, FLAGS.companies, FLAGS.m,
+             FLAGS.debug, FLAGS.team_size)
     print("Companies: ")
     for booth in g.board.booths:
         print(booth.name)
@@ -34,26 +37,31 @@ def main(_):
 
     grid = g.generate_player_copy(init=True)
 
-    player1 = P1(grid)
+    player1 = P1(grid, FLAGS.team_size)
     if FLAGS.m:
-        player2 = P2(grid)
+        player2 = P2(grid, FLAGS.team_size)
 
-    grid1, pos1 = g.generate_player_copy(team=0), g.board.get_positions(0)
+    grid1, pos1, score1 = (g.generate_player_copy(team=0),
+                          g.board.get_positions(0), 0)
     if FLAGS.m:
-        grid2, pos2 = g.generate_player_copy(team=1), g.board.get_positions(1)
+        grid2, pos2, score2 = (g.generate_player_copy(team=1),
+                              g.board.get_positions(1), 0)
 
     for i in range(FLAGS.num_moves):
-        moves = [player1.step(grid1, pos1)]
+        moves = [player1.step(grid1, pos1, score1)]
         if FLAGS.m:
-            moves.append(player2.step(grid2, pos2))
+            moves.append(player2.step(grid2, pos2, score2))
 
         result = g.make_move(moves)
-        grid1, pos1 = result[0]
+        grid1, pos1, score1 = result[0]
         if FLAGS.m:
-            grid2, pos2 = result[1]
+            grid2, pos2, score2 = result[1]
         if FLAGS.debug:
             print("Team 1 positions: {}".format(pos1))
-            print("Team 2 positions: {}".format(pos2))
+            print("Score: {}".format(score1))
+            if FLAGS.m:
+                print("Team 2 positions: {}".format(pos2))
+                print("Score: {}".format(score2))
 
 if __name__ == '__main__':
     app.run(main)

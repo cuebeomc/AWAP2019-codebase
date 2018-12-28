@@ -129,7 +129,7 @@ class Booth(object):
 
     def execute_step(self):
         """Executes steps for the line."""
-        (self.line).execute_step()
+        return (self.line).execute_step()
 
 class Line(object):
     """
@@ -163,6 +163,8 @@ class Line(object):
 
     def execute_step(self):
         """Compresses the line, updates the talker, and redelegates lines."""
+        ret_val = None
+
         full_line = []
         for tile in self.tiles:
             full_line += tile.get_bots_in_line()
@@ -174,14 +176,17 @@ class Line(object):
                     full_line.pop(0)
                     self.progress = 0
                     self.tiles[0].add_bot(self.current_talker)
-                    print("TALKED TO RECRUITER")
-                    # Should do some scoring stuff here!
+                    team_id = self.current_talker.get_team_id()
+                    if team_id is not None:
+                        bot_id = self.current_talker.get_id()
+                        ret_val = (self.name, team_id, bot_id)
             else:
                 self.progress = 0
                 self.current_talker = front_of_line
         else:
             self.current_talker = None
         self._delegate(full_line)
+        return ret_val
 
     def _delegate(self, line):
         """Delegates the bots into the lines."""

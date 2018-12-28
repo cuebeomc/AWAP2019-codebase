@@ -10,12 +10,12 @@ that is ordered (index 0 contains the main bot's loc, index 1 contains
 from awap2019 import Tile, Bot, Direction
 
 class Team(object):
-    def __init__(self, initial_board):
+    def __init__(self, initial_board, team_size):
         # Feel free to do some work with the initial board!
         self.board = initial_board
-        self.team_size = 3
+        self.team_size = team_size
 
-    def step(self, visible_board, positions):
+    def step(self, visible_board, positions, score):
         """This function should return a list of directions. For example,
         [Direction.RIGHT, Direction.LEFT, Direction.NONE]
         indicates that the main bot is told to go right, the first helper
