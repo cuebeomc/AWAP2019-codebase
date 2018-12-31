@@ -1,12 +1,13 @@
 # THINGS TO DO
 
-# Add bot replacement technique for players
+# Write proper threshold formula and add working crowd (make bots)
 
 # Check and debug code!!
 
 
 from .tile import Tile, Booth, Line
 from .bot import Bot
+from .direction import Direction
 import numpy as np
 
 import random
@@ -50,6 +51,10 @@ class Board(object):
 
         self.debug = debug
 
+    def dbg_print(self, str):
+        if self.debug:
+            print(str)
+
     def init_bots(self, multiplayer):
         """Places the bots onto the board.
 
@@ -78,16 +83,47 @@ class Board(object):
         """Gets the tile at loc."""
         return self.grid[loc[0]][loc[1]]
 
+    # Note: you can only replace a main bot with a helper bot.
+    # (Replacing a helper with a helper is functionally useless.)
     def step(self, team_moves):
         """Updates the whole board by one step."""
         for bot in self.bots:
             bot.compute_step()
         for team, moves in zip(self.player_bots, team_moves):
+            if moves[0] == Direction.REPLACE:
+                self.dbg_print("Replacing!")
+                swap_index = -1
+                invalid = False
+
+                main_loc = team[0].get_loc()
+                for i in range(1, self.team_size):
+                    bot_loc = team[i].get_loc()
+                    if moves[i] == Direction.REPLACE and bot_loc == main_loc:
+                        if swap_index == -1:
+                            self.dbg_print("Found the bot to replace with.")
+                            swap_index = i
+                        else:
+                            self.dbg_print("Found another one; replace is invalid.")
+                            moves[i] = Direction.NONE
+                            invalid = True
+                    elif moves[i] == Direction.REPLACE:
+                        self.dbg_print("Found a replace not on the same location.")
+                        moves[i] = Direction.NONE
+
+                moves[0] = Direction.NONE
+                if swap_index != -1:
+                    moves[swap_index] = Direction.NONE
+                    if not invalid:
+                        self._swap(team, swap_index)
+            self.dbg_print("Team: {}".format(team))
+            self.dbg_print("New moves: {}".format(moves))
+
             for bot, move in zip(team, moves):
                 bot.set_new_direction(move)
 
         for bot in self.bots:
             bot.execute_step()
+
         for team in self.player_bots:
             for bot in team:
                 bot.execute_step()
@@ -99,10 +135,17 @@ class Board(object):
                 talked_booths.append(val)
         updated_scores = self._score(talked_booths)
 
-        if self.debug:
-            print(np.matrix(self.grid))
+        self.dbg_print(np.matrix(self.grid))
         self._update_board()
         return updated_scores
+
+    def _swap(self, arr, index):
+        """Swaps bot at index 0 with bot at index index in arr."""
+        arr[0], arr[index] = arr[index], arr[0]
+
+        temp_id = arr[0].get_id()
+        arr[0].set_id(arr[index].get_id())
+        arr[index].set_id(temp_id)
 
     def _score(self, talked):
         scores = [0] * self.players
@@ -159,7 +202,7 @@ class Board(object):
     def _random_time(self, size):
         """Picks a random time. Currently 10, will change if we decide to add
         random times."""
-        return 1
+        return 4
 
     def _parse(self, file_path):
         """Parses a config file into a grid of tiles and booths."""

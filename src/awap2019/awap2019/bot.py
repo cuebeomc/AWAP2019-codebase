@@ -35,6 +35,9 @@ class Bot(object):
 
         return new_bot
 
+    def set_id(self, new_id):
+        self.id = new_id
+
     def get_id(self):
         return self.id
 

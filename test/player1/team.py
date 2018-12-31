@@ -21,18 +21,21 @@ class Team(object):
         indicates that the main bot is told to go right, the first helper
         bot goes left, and the second helper bot does nothing.
         """
-        user_input = input("\nMovement: ")
-        if user_input == 'left':
-            moves = [Direction.LEFT] * self.team_size
-        elif user_input == 'right':
-            moves = [Direction.RIGHT] * self.team_size
-        elif user_input == 'up':
-            moves = [Direction.UP] * self.team_size
-        elif user_input == 'down':
-            moves = [Direction.DOWN] * self.team_size
-        elif user_input == 'enter':
-            moves = [Direction.ENTER] * self.team_size
-        else:
-            moves = [Direction.NONE] * self.team_size
-
+        moves = []
+        for i in range(self.team_size):
+            user_input = input("\nMovement {}: ".format(i))
+            if user_input == 'left':
+                moves.append(Direction.LEFT)
+            elif user_input == 'right':
+                moves.append(Direction.RIGHT)
+            elif user_input == 'up':
+                moves.append(Direction.UP)
+            elif user_input == 'down':
+                moves.append(Direction.DOWN)
+            elif user_input == 'enter':
+                moves.append(Direction.ENTER)
+            elif user_input == 'replace':
+                moves.append(Direction.REPLACE)
+            else:
+                moves.append(Direction.NONE)
         return moves

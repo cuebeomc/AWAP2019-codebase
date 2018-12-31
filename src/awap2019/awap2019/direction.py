@@ -7,6 +7,7 @@ class Direction(Enum):
     RIGHT = (0, 1)
     DOWN = (1, 0)
     ENTER = (0, 0)
+    REPLACE = (None, 0)
 
     def __init__(self, x, y):
         self.x = x

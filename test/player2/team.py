@@ -32,6 +32,8 @@ class Team(object):
             moves = [Direction.DOWN] * self.team_size
         elif user_input == 'enter':
             moves = [Direction.ENTER] * self.team_size
+        elif user_input == 'replace':
+            moves = [Direction.REPLACE] * self.team_size
         else:
             moves = [Direction.NONE] * self.team_size
 

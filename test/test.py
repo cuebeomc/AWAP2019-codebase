@@ -5,8 +5,9 @@ player1 and player2, respectively) and should implement a class Team with an
 __init__ and a step function. We set up the game with the flags given to
 this file, and we play out the game.
 
-TODO: Still have to implement a scoring system. This will be passed along to
-this script through the Game class' function make_move.
+Example:
+
+    python test.py -debug -m -team_size 5
 """
 
 from awap2019 import Direction, Game
