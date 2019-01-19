@@ -48,7 +48,7 @@ def main(_):
         grid2, pos2, score2 = (g.generate_player_copy(team=1),
                               g.board.get_positions(1), 0)
 
-    for i in range(FLAGS.num_moves):
+    for _ in range(FLAGS.num_moves):
         moves = [player1.step(grid1, pos1, score1)]
         if FLAGS.m:
             moves.append(player2.step(grid2, pos2, score2))
