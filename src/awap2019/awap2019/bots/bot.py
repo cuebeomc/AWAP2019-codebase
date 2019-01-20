@@ -1,4 +1,4 @@
-from .direction import Direction
+from ..direction import Direction
 
 class Bot(object):
 
@@ -18,6 +18,8 @@ class Bot(object):
         self.direction = Direction.NONE
         self.new_direction = Direction.NONE
 
+        self.in_line = False
+
     def __str__(self):
         return "{}: {}".format(self.id, self.loc)
 
@@ -31,9 +33,15 @@ class Bot(object):
         new_bot.type = self.type
 
         new_bot.direction = self.direction
-        new_bot.new_direction = self.new_direction
+        new_bot.new_direction = Direction.NONE # They don't need this information.
+
+        new_bot.in_line = self.in_line
 
         return new_bot
+
+    def get_status(self):
+        """Returns true if in line, and false if not in line."""
+        return self.in_line
 
     def set_id(self, new_id):
         self.id = new_id
@@ -70,11 +78,11 @@ class Bot(object):
             self.progress = 0
             return
         elif self.direction == Direction.ENTER:
-            print("Entering line.")
             self.progress = 0
-            self.board.get(self.loc).add_to_line(self)
+            self.in_line = self.board.get(self.loc).add_to_line(self)
             self.direction = Direction.NONE
             return
+        self.in_line = False
         self.progress += self.speed
         new_loc = (self.direction).get_loc(self.loc)
         dest_tile = (self.board).get(new_loc)
@@ -88,15 +96,15 @@ class Bot(object):
     def execute_step(self):
         """Executes the computed step, if valid."""
         if self.new_direction != self.direction:
-            if not self._is_valid():
+            if not self._is_valid(self.new_direction):
                 self.new_direction = Direction.NONE
             self.direction = self.new_direction
             self.progress = 0
         self.update_progress()
 
-    def _is_valid(self):
+    def _is_valid(self, direction):
         """Checks if self.new_direction is a valid direction."""
-        new_loc = (self.new_direction).get_loc(self.loc)
+        new_loc = (direction).get_loc(self.loc)
         if (0 <= new_loc[0] < (self.board).x_dim() and
            0 <= new_loc[1] < (self.board).y_dim()):
             dest_tile = (self.board).get(new_loc)

@@ -7,7 +7,8 @@ with more information pertaining to their locations and a list of positions
 that is ordered (index 0 contains the main bot's loc, index 1 contains
 1st helper's loc, etc)."""
 
-from awap2019 import Tile, Bot, Direction
+from awap2019 import Tile, Direction
+from awap2019.bots import Bot
 
 class Team(object):
     def __init__(self, initial_board, team_size):

@@ -6,7 +6,7 @@
 
 
 from .tile import Tile, Booth, Line
-from .bot import Bot
+from .bots import Bot, JitteryBot
 from .direction import Direction
 import numpy as np
 
@@ -56,22 +56,20 @@ class Board(object):
             print(str)
 
     def init_bots(self, multiplayer):
-        """Places the bots onto the board.
-
-        NOTE: Scoring is not yet implemented, but it will use the UID given
-        to each bot to correctly assign points."""
+        """Places the bots onto the board."""
         if multiplayer:
             self.players = 2
         # Do the initialization of multiple bots/place them!
         for i in range(self.players):
             # First bot in this list is main bot by standard.
-            # No scoring mechanism has been created yet to prioritize first bot.
             team_i = []
             for j in range(self.team_size):
                 team_i.append(Bot(self, self.start, 2, j, team_id=i))
             (self.player_bots).append(team_i)
         # TODO: Initialize the crowd!
         start_id = self.team_size
+        for i in range(start_id, start_id + 5):
+            self.bots.append(JitteryBot(self, self.start, 2, i))
 
     def x_dim(self):
         return self.dim[0]
@@ -218,11 +216,13 @@ class Board(object):
             if first_line:
                 dims = line.split()
                 self.dim = (int(dims[0]), int(dims[1]))
+                self.grid = np.empty(self.dim, dtype=object)
                 for i in range(self.dim[0]):
-                    row = []
+                    #row = []
                     for j in range(self.dim[1]):
-                        row.append(Tile(i, j))
-                    (self.grid).append(row)
+                        self.grid[i][j] = Tile(i, j)
+                        #row.append(Tile(i, j))
+                    #(self.grid).append(row)
                 num_companies = int(dims[2])
                 sizes = [None] * num_companies
                 booth_tiles = [[] for _ in range(num_companies)]

@@ -91,6 +91,8 @@ class Tile(object):
         if self.end_of_line and bot in self.bots:
             (self.bots_in_line).append(bot)
             self.remove_bot(bot)
+            return True
+        return False
 
     def copy(self):
         new_tile = Tile(self.loc[0], self.loc[1])
@@ -174,6 +176,7 @@ class Line(object):
                 self.progress += 1
                 if self.progress >= self.wait_time:
                     full_line.pop(0)
+                    self.current_talker.in_line = False
                     self.progress = 0
                     self.tiles[0].add_bot(self.current_talker)
                     team_id = self.current_talker.get_team_id()
