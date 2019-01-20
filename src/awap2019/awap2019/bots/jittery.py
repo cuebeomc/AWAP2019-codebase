@@ -26,4 +26,3 @@ class JitteryBot(Bot):
                         self.new_direction = direction
                         break
                 self.next_loc = self.new_direction.get_loc(self.loc)
-                
