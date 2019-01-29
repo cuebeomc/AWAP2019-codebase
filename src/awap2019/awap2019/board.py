@@ -24,7 +24,7 @@ class Board(object):
     S1  F  2 E3  5 E4  F F
     F  S2 S2 L5 L5 L5 L5 F
     """
-    def __init__(self, config_file, company_file, debug, team_size):
+    def __init__(self, config_file, company_file, log_file, debug, team_size):
         """Initializes the Board class.
 
         grid: Grid of tiles
@@ -34,6 +34,8 @@ class Board(object):
                      a list of 4 bots that correlate to its index's player #.
         dim: The dimensions of the board.
         """
+        self.time_step = 0
+        self.log_file = log_file
         self.team_size = team_size
 
         self.grid = []
@@ -72,6 +74,8 @@ class Board(object):
         self.bots.append(LineFollower(self, self.start, 1, start_id))
         #for i in range(start_id, start_id + 5):
             #self.bots.append(JitteryBot(self, self.start, 1, i))
+        
+        self._log('w')
 
     def x_dim(self):
         return self.dim[0]
@@ -140,6 +144,7 @@ class Board(object):
 
         self.dbg_print(np.matrix(self.grid))
         self._update_board()
+        self._log('a+')
         return updated_scores
 
     def _swap(self, arr, index):
@@ -260,3 +265,13 @@ class Board(object):
             name = self._pick_company(size)
             time = self._random_time(size)
             (self.booths).append(Booth(name, size, b_tiles, l_tiles, time))
+
+    def _log(self, mode):
+        with open(self.log_file, mode) as log:
+            log.write("{}\n".format(self.time_step))
+            for team in self.player_bots:
+                for bot in team:
+                    log.write("{}\n".format(State(bot)))
+            for bot in self.bots:
+                log.write("{}\n".format(State(bot)))
+        self.time_step += 1
