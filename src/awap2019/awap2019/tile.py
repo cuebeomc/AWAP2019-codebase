@@ -17,7 +17,7 @@ class Tile(object):
         self.end_of_line = False
         self.line = None
         self.booth = None
-        self.threshold = self.update_threshold()
+        self.update_threshold()
 
     def __str__(self):
         return "({}, {})".format(len(self.bots), len(self.bots_in_line))
@@ -63,8 +63,23 @@ class Tile(object):
 
     # Functions that will only be available to the internal game mechanics.
     def update_threshold(self):
-        """TODO: Add mathematical formula!"""
-        return 2
+        pop = self.get_num_bots()
+        if pop == 0:
+            self.threshold = 1
+        elif pop == 1:
+            self.threshold = 1
+        elif pop == 2:
+            self.threshold = 1
+        elif pop == 3:
+            self.threshold = 2
+        elif pop == 4:
+            self.threshold = 2
+        elif pop == 5:
+            self.threshold = 3
+        elif pop == 6:
+            self.threshold = 4
+        else:
+            self.threshold = 8
 
     def get_bots_in_line(self):
         return self.bots_in_line
@@ -139,7 +154,7 @@ class Line(object):
     Line is responsible for moving the bots in a line if they choose
     to stay in the line.
     """
-    def __init__(self, name, tiles, wait_time, max_per_tile=4):
+    def __init__(self, name, tiles, wait_time, max_per_tile=3):
         """
         name: Name of the company the line is for.
         tiles: The list of tiles that constitute the line. The first tile
@@ -177,8 +192,11 @@ class Line(object):
                 if self.progress >= self.wait_time:
                     full_line.pop(0)
                     self.current_talker.in_line = False
+                    self.current_talker.line_pos = None
+                    self.current_talker.line_name = None
                     self.progress = 0
                     self.tiles[0].add_bot(self.current_talker)
+
                     team_id = self.current_talker.get_team_id()
                     if team_id is not None:
                         bot_id = self.current_talker.get_id()
@@ -188,6 +206,10 @@ class Line(object):
                 self.current_talker = front_of_line
         else:
             self.current_talker = None
+        for i, bot in enumerate(full_line):
+            bot.line_pos = i
+            bot.line_name = self.name
+
         self._delegate(full_line)
         return ret_val
 

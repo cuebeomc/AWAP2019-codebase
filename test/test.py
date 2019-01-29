@@ -42,26 +42,26 @@ def main(_):
     if FLAGS.m:
         player2 = P2(grid, FLAGS.team_size)
 
-    grid1, pos1, score1 = (g.generate_player_copy(team=0),
-                          g.board.get_positions(0), 0)
+    grid1, state1, score1 = (g.generate_player_copy(team=0),
+                             g.board.get_states(0), 0)
     if FLAGS.m:
-        grid2, pos2, score2 = (g.generate_player_copy(team=1),
-                              g.board.get_positions(1), 0)
+        grid2, state2, score2 = (g.generate_player_copy(team=1),
+                                 g.board.get_states(1), 0)
 
     for _ in range(FLAGS.num_moves):
-        moves = [player1.step(grid1, pos1, score1)]
+        moves = [player1.step(grid1, state1, score1)]
         if FLAGS.m:
-            moves.append(player2.step(grid2, pos2, score2))
+            moves.append(player2.step(grid2, state2, score2))
 
         result = g.make_move(moves)
-        grid1, pos1, score1 = result[0]
+        grid1, state1, score1 = result[0]
         if FLAGS.m:
-            grid2, pos2, score2 = result[1]
+            grid2, state2, score2 = result[1]
         if FLAGS.debug:
-            print("Team 1 positions: {}".format(pos1))
+            print("Team 1 states: {}".format(state1))
             print("Score: {}".format(score1))
             if FLAGS.m:
-                print("Team 2 positions: {}".format(pos2))
+                print("Team 2 states: {}".format(state2))
                 print("Score: {}".format(score2))
 
 if __name__ == '__main__':

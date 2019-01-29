@@ -46,5 +46,5 @@ class Game(object):
         for i, score in enumerate(updated_scores):
             self.scoreboard[i] += score
 
-        return [(self.generate_player_copy(i), (self.board).get_positions(i),
+        return [(self.generate_player_copy(i), (self.board).get_states(i),
                 self.scoreboard[i]) for i in range(self.players)]

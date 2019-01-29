@@ -17,3 +17,17 @@ class Direction(Enum):
         if self.x is None:
             return loc
         return (loc[0] + self.x, loc[1] + self.y)
+
+    @classmethod
+    def get_dir(cls, loc1, loc2):
+        vector = (loc2[0] - loc1[0], loc2[1] - loc1[1])
+        if vector == (0, -1):
+            return cls.LEFT
+        elif vector == (-1, 0):
+            return cls.UP
+        elif vector == (0, 1):
+            return cls.RIGHT
+        elif vector == (1, 0):
+            return cls.DOWN
+        else:
+            return cls.NONE

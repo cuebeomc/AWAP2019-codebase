@@ -18,6 +18,8 @@ class Bot(object):
         self.direction = Direction.NONE
         self.new_direction = Direction.NONE
 
+        self.line_pos = None # This is set by Line, do not touch
+        self.line_name = None
         self.in_line = False
 
     def __str__(self):
@@ -39,7 +41,7 @@ class Bot(object):
 
         return new_bot
 
-    def get_status(self):
+    def is_in_line(self):
         """Returns true if in line, and false if not in line."""
         return self.in_line
 
@@ -82,7 +84,11 @@ class Bot(object):
             self.in_line = self.board.get(self.loc).add_to_line(self)
             self.direction = Direction.NONE
             return
+
         self.in_line = False
+        self.line_pos = None
+        self.line_name = None
+
         self.progress += self.speed
         new_loc = (self.direction).get_loc(self.loc)
         dest_tile = (self.board).get(new_loc)

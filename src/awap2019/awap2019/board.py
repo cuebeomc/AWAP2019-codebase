@@ -6,7 +6,8 @@
 
 
 from .tile import Tile, Booth, Line
-from .bots import Bot, JitteryBot
+from .bots import *
+from .state import State
 from .direction import Direction
 import numpy as np
 
@@ -64,12 +65,13 @@ class Board(object):
             # First bot in this list is main bot by standard.
             team_i = []
             for j in range(self.team_size):
-                team_i.append(Bot(self, self.start, 2, j, team_id=i))
+                team_i.append(Bot(self, self.start, 1, j, team_id=i))
             (self.player_bots).append(team_i)
         # TODO: Initialize the crowd!
         start_id = self.team_size
-        for i in range(start_id, start_id + 5):
-            self.bots.append(JitteryBot(self, self.start, 2, i))
+        self.bots.append(LineFollower(self, self.start, 1, start_id))
+        #for i in range(start_id, start_id + 5):
+            #self.bots.append(JitteryBot(self, self.start, 1, i))
 
     def x_dim(self):
         return self.dim[0]
@@ -79,7 +81,10 @@ class Board(object):
 
     def get(self, loc):
         """Gets the tile at loc."""
-        return self.grid[loc[0]][loc[1]]
+        if 0 <= loc[0] < self.dim[0] and 0 <= loc[1] < self.dim[1]:
+            return self.grid[loc[0]][loc[1]]
+        else:
+            return None
 
     # Note: you can only replace a main bot with a helper bot.
     # (Replacing a helper with a helper is functionally useless.)
@@ -168,10 +173,10 @@ class Board(object):
                         visible_locs.add((i, j))
         return list(visible_locs)
 
-    def get_positions(self, team):
-        """Gets the positions of the bots in the team."""
+    def get_states(self, team):
+        """Gets the states of the bots in the team."""
         team_bots = self.player_bots[team]
-        return [bots.get_loc() for bots in team_bots]
+        return [State(bot) for bot in team_bots]
 
     def _update_board(self):
         """Updates the thresholds."""
@@ -198,9 +203,9 @@ class Board(object):
         return chosen
 
     def _random_time(self, size):
-        """Picks a random time. Currently 10, will change if we decide to add
+        """Picks a random time. Currently 5, will change if we decide to add
         random times."""
-        return 4
+        return 5
 
     def _parse(self, file_path):
         """Parses a config file into a grid of tiles and booths."""
