@@ -7,7 +7,7 @@ this file, and we play out the game.
 
 Example:
 
-    python test.py -debug -m -team_size 5
+    python test.py -debug -m -team_size 4
 """
 
 from awap2019 import Direction, Game

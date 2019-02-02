@@ -33,4 +33,3 @@ class State(object):
                                                self.line_pos)
 
     __repr__ = __str__
-
