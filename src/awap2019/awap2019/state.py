@@ -26,10 +26,14 @@ class State(object):
         else:
             self.state = "none"
 
-    def __str__(self):
+    def __repr__(self):
+        return "TID_%02d ID_%02d @%02d.%02d P_%02d_T_%02d_L_%02d" % (self.team_id,
+            self.id, self.x, self.y, self.progress, self.threshold, self.line_pos)
+
+    # self.state is None?
+    def get_num_encoding(self):
         return "{} {} {} {} {} {} {} {}".format(self.team_id, self.id, self.x,
                                                self.y, self.state, 
                                                self.progress, self.threshold,
                                                self.line_pos)
 
-    __repr__ = __str__

@@ -24,6 +24,7 @@ class Team(object):
         """
         moves = []
         for i in range(self.team_size):
+
             user_input = input("\nMovement {}: ".format(i))
             if user_input == 'left':
                 moves.append(Direction.LEFT)
