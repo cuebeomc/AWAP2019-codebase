@@ -23,7 +23,14 @@ class Tile(object):
         return "({}, {})".format(len(self.bots), len(self.bots_in_line))
 
     def __repr__(self):
-        return "({}, {})".format(len(self.bots), len(self.bots_in_line))
+        if not self.booth == None:
+            return "BOOTH"
+        if self.end_of_line:
+            return "E%02d%02d" % (len(self.bots), len(self.bots_in_line))
+        if not self.line == None:
+            return "L%02d%02d" % (len(self.bots), len(self.bots_in_line))
+        return "T%02d%02d" % (len(self.bots), len(self.bots_in_line))
+        #return "({}, {})".format(len(self.bots), len(self.bots_in_line))
 
     # Getters that are available to players.
     def is_part_of_line(self):

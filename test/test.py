@@ -59,11 +59,11 @@ def main(_):
         if FLAGS.m:
             grid2, state2, score2 = result[1]
         if FLAGS.debug:
-            print("Team 1 states: {}".format(state1))
-            print("Score: {}".format(score1))
+            print("| Team 1 states: %s" % str(state1))
+            print("| Score: {}".format(score1))
             if FLAGS.m:
-                print("Team 2 states: {}".format(state2))
-                print("Score: {}".format(score2))
+                print("| Team 2 states: {}".format(state2))
+                print("| Score: {}".format(score2))
 
 if __name__ == '__main__':
     app.run(main)
