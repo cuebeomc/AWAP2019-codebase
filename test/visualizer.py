@@ -51,6 +51,28 @@ with open(FLAGS.config_file, 'r') as config:
                     line_tiles[i].append((x, y))
             y += 1
 
+ax = plt.axes(xlim=(0, dim[0] * 3), ylim=(0, dim[1] * 3))
+
+# Sorting each line to have proper ordering from start to end.
+for i, line in enumerate(line_tiles):
+    if len(line) > 1:
+        sort_index = None
+        rev = False
+
+        end_loc = line[0]
+        comp = line[1]
+        if end_loc[0] == comp[0]:
+            sort_index = 1
+        else:
+            sort_index = 0
+        if end_loc[sort_index] < comp[sort_index]:
+            rev = True
+
+        line_tiles[i] = sorted(line,
+                               key=lambda x: x[sort_index],
+                               reverse=rev)
+
+# Creating rectangles to draw for each booth.
 booth_rects = []
 for booth in booth_tiles:
     lx, ly = booth[0]
@@ -58,11 +80,8 @@ for booth in booth_tiles:
     w, h = (ux - lx + 1) * 3, (uy - ly + 1) * 3
     booth_rects.append(plt.Rectangle((lx * 3, ly * 3), w, h, edgecolor='k', facecolor='#8b8989'))
 
-
-
-
 # Parsing log file.
-"""
+
 sec1 = True   # First section is # of bots
 sec2 = False  # Second section is the names of the companies
 sec3 = False  # Third section is the actual bot movements.
@@ -72,6 +91,8 @@ colors = ['191970', '#b22222', '#eee9e9']
 bots = []
 company_names = []
 
+time_step = 0
+
 with open(FLAGS.log_file, 'r') as log:
     for line in log:
         if sec1:
@@ -79,7 +100,8 @@ with open(FLAGS.log_file, 'r') as log:
             for i, n in enumerate(num_bots):
                 team = [plt.Circle((0, 0), 0.3, edgecolor='k', 
                                    facecolor=colors[i]) for _ in range(n)]
-                bots.append(team)
+                if team:
+                    bots.append(team)
             sec1, sec2, sec3 = False, True, False
         elif sec2:
             if line == "\n":
@@ -87,10 +109,12 @@ with open(FLAGS.log_file, 'r') as log:
             else:
                 company_names += line.split()
         elif sec3:
-            # DO THE ACTUAL PARSING!
-            print("Not implemented!")
-            break
-"""
+            bot_status = line.split()
+            if len(bot_status) == 1:
+                time_step = bot_status[0]
+            else:
+                tid, uid, x, y, state, p, t, lp = bot_status
+
 
 print("Defining points...")
 
