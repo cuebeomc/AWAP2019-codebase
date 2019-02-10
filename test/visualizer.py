@@ -11,12 +11,12 @@ import matplotlib.animation as animation
 import numpy as np
 
 FLAGS = flags.FLAGS
-flags.DEFINE_string("config_file", "config.txt", "Config file to build map.")
+flags.DEFINE_string("board_file", "boards/sample.txt", "Config file to build map.")
 flags.DEFINE_string("log_file", "log.txt", "Log file to read movements.")
 
 FLAGS(sys.argv)
 
-# Parsing config file.
+# Parsing board file.
 # NOTE: All (x, y) from here is plot-style (x, y), not array notation.
 
 first_line = True
@@ -28,7 +28,7 @@ y = 0
 fig = plt.figure(figsize=(8, 6))
 ax = plt.axes(xlim=(0, 24), ylim=(0, 18))
 
-with open(FLAGS.config_file, 'r') as config:
+with open(FLAGS.board_file, 'r') as config:
     for line in config:
         if first_line:
             f = line.split()
