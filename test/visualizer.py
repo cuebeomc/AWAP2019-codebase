@@ -47,10 +47,10 @@ with open(FLAGS.board_file, 'r') as config:
                     booth_tiles[i].append((x, y))
                 elif tile[0] == 'E':
                     i = int(tile[1:])
-                    line_tiles[i].insert(0, (x, y))
+                    line_tiles[i].insert(0, (y, x))
                 elif tile[0] != 'F' and tile[0] != 'B':
                     i = int(tile)
-                    line_tiles[i].append((x, y))
+                    line_tiles[i].append((y, x))
             y += 1
 
 ax = plt.axes(xlim=(0, dim[0] * 3), ylim=(0, dim[1] * 3))
@@ -60,6 +60,7 @@ directions = []
 
 # Sorting each line to have proper ordering from start to end.
 for i, line in enumerate(line_tiles):
+    direction = "none"
     if len(line) > 1:
         sort_index = None
         rev = False
@@ -72,8 +73,7 @@ for i, line in enumerate(line_tiles):
             sort_index = 0
         if end_loc[sort_index] < comp[sort_index]:
             rev = True
-        
-        direction = "none"
+
         if sort_index == 1 and rev:
             direction = "left"
         elif sort_index == 1 and not rev:
@@ -87,8 +87,9 @@ for i, line in enumerate(line_tiles):
                            key=lambda x: x[sort_index],
                            reverse=rev)
         lines.append(new_tiles)
-        directions.append(direction)
+    directions.append(direction)
 
+print("lines: {}".format(lines))
 line_dic = {}
 
 for n, line in enumerate(lines):
@@ -109,7 +110,7 @@ sec1 = True   # First section is # of bots
 sec2 = False  # Second section is the names of the companies
 sec3 = False  # Third section is the actual bot movements.
 
-colors = ['191970', '#b22222', '#eee9e9']
+colors = ['#191970', '#b22222', '#eee9e9']
 
 bots = []
 company_names = []
@@ -129,7 +130,7 @@ with open(FLAGS.log_file, 'r') as log:
                     bots.append(team)
             sec1, sec2, sec3 = False, True, False
         elif sec2:
-            board = Controller(bots, dim, line_dic, direction)
+            controller = Controller(bots, dim, line_dic, directions)
             if line == "\n":
                 sec1, sec2, sec3 = False, False, True
             else:
@@ -138,14 +139,107 @@ with open(FLAGS.log_file, 'r') as log:
             bot_status = line.split()
             if len(bot_status) == 1:
                 time_step = bot_status[0]
+                controller.update(time_step)
             else:
-                tid, uid, x, y, state, p, t, lp = bot_status
+                controller.parse_bot_state(bot_status)
 
+test = controller.get_bot_positions(0, 0)
+print("Asserted positions: {}".format(test))
 
-print("Defining points...")
+prev_state = None
+prev_tstep = None
+is_none = False
+prev_is_none = False
+
+point_list = []
+speeds = []
+curr_points = []
+curr_speeds = []
+nones = []
+
+max_tstep = 0
+for tstep, loc in test.items():
+    state = None
+    if loc:
+        state = (loc[1], loc[0])
+    if tstep == 0:
+        prev_state = state
+        prev_tstep = tstep
+        curr_points.append(prev_state)
+        continue
+    
+    if state == None:
+        if curr_points and not prev_is_none:
+            point_list.append(curr_points)
+            curr_points = [prev_state]
+            prev_tstep = tstep
+        if curr_speeds and not prev_is_none:
+            speeds.append(curr_speeds)
+            curr_speeds = []
+        nones.append(tstep)
+        prev_is_none = True
+    else:
+        curr_points.append(state)
+        speed = tstep - prev_tstep
+        curr_speeds.append(speed)
+
+        prev_state = state
+        prev_tstep = tstep
+        prev_is_none = False
+    
+    max_tstep = tstep
+if curr_points and not prev_is_none:
+    point_list.append(curr_points)
+if curr_speeds and not prev_is_none:
+    speeds.append(curr_speeds)
+
+BASE_SPEED = 50
+
+print(nones)
+print(point_list)
+print(speeds)
+
+total_points = []
+for i, points in enumerate(point_list):
+    if len(points) == 2:
+        sample_space = BASE_SPEED * speeds[i][0]
+        x1, y1 = points[0]
+        x2, y2 = points[1]
+        x_coords = np.linspace(x1, x2, sample_space, endpoint=False)
+        y_coords = np.linspace(y1, y2, sample_space, endpoint=False)
+        points = np.array([x_coords, y_coords]).T
+        total_points.append(points)
+        continue
+
+    np_points = np.array(points)
+    print(np_points)
+    distance = np.cumsum(np.sqrt(np.sum(np.diff(np_points, axis=0)**2, axis=1)))
+    distance = np.insert(distance, 0, 0)/distance[-1]
+    print(distance)
+    speed = np.array(speeds[i])
+    alpha = np.array([])
+    print(speed)
+
+    for x in range(len(distance) - 1):
+        new_section = np.linspace(distance[x], distance[x+1], BASE_SPEED * speed[x], endpoint=False)
+        alpha = np.concatenate((alpha, new_section))
+    
+    interpolator = interp1d(distance, points, kind='quadratic', axis=0)
+    np_points = interpolator(alpha)
+    total_points.append(np_points)
+
+print(total_points)
+# Add in time where bot is still!
+path = np.concatenate(total_points)
+
+print("length of path: {}".format(len(path)))
+
+    
 
 points = np.array([[0.5, 1.5, 1.5, 2.5, 2.5],
                    [0.5, 0.5, 1.5, 1.5, 2.5]]).T  # a (nbre_points x nbre_dim) array
+
+print(points)
 
 print("Done defining points. Defining distances...")
 
@@ -172,7 +266,7 @@ points = interpolator(alpha)
 
 print("Created interpolation. Creating figure...")
 
-patch = plt.Circle((0, 0), 0.3, edgecolor='k', facecolor='#eee9e9')
+patch = bots[0][0]
 
 # Removing ticks on axes and starting (0, 0) at top right.
 ax.set_xticks([])
@@ -187,8 +281,8 @@ def init():
     return [patch] + booth_rects
 
 def animate(i):
-    index = i % len(points)
-    patch.center = points[index]
+    index = i % len(path)
+    patch.center = path[index]
     return [patch] + booth_rects
 
 anim = animation.FuncAnimation(fig, animate, 
