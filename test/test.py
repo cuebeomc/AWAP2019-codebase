@@ -22,12 +22,12 @@ FLAGS = flags.FLAGS
 flags.DEFINE_boolean('m', False, 'Play in multiplayer mode.')
 flags.DEFINE_integer('num_moves', 300, 'The number of moves in a game.')
 
-flags.DEFINE_string('config', 'config.txt', 'The path to the config file.')
+flags.DEFINE_string('config', 'boards/sample.txt', 'The path to the config file.')
 flags.DEFINE_string('companies', 'companies.txt', 'The path to the list of '
                                                   'companies.')
 flags.DEFINE_string('log_file', 'log.txt', 'The path to the log file.')
 flags.DEFINE_boolean('debug', False, 'Debug mode')
-flags.DEFINE_integer('team_size', 3, 'The team size.')
+flags.DEFINE_integer('team_size', 4, 'The team size.')
 
 def main(_):
     g = Game(FLAGS.config, FLAGS.companies, FLAGS.log_file,

@@ -11,7 +11,7 @@ class State(object):
         self.x = loc[0]
         self.y = loc[1]
         self.progress = bot.progress
-        self.threshold = bot.board.get(loc.get_loc(self.dir)).get_threshold()
+        self.threshold = bot.board.get(self.dir.get_loc(loc)).get_threshold()
         self.line_pos = -1 if bot.line_pos is None else bot.line_pos
 
         if bot.is_in_line():

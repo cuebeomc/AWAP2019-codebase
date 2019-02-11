@@ -9,7 +9,6 @@ def BFS(board, src, dest):
 
     while queue:
         path = queue.pop(0)
-        print("Current path: {}".format(path))
         node = path[-1]
 
         if node == dest:

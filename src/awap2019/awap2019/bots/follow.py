@@ -19,7 +19,3 @@ class LineFollower(Bot):
             if self.queue:
                 first_tile = self.queue[0]
                 self.new_direction = Direction.get_dir(self.loc, first_tile)
-
-
-        
-
