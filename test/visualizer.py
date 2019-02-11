@@ -1,14 +1,16 @@
-import sys
+from controller import Controller
 
 from absl import app, flags
 from scipy.interpolate import interp1d
 
 import matplotlib as mpl
 mpl.use('TkAgg')
-
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+
 import numpy as np
+
+import sys
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string("board_file", "boards/sample.txt", "Config file to build map.")
@@ -53,6 +55,9 @@ with open(FLAGS.board_file, 'r') as config:
 
 ax = plt.axes(xlim=(0, dim[0] * 3), ylim=(0, dim[1] * 3))
 
+lines = []
+directions = []
+
 # Sorting each line to have proper ordering from start to end.
 for i, line in enumerate(line_tiles):
     if len(line) > 1:
@@ -67,10 +72,28 @@ for i, line in enumerate(line_tiles):
             sort_index = 0
         if end_loc[sort_index] < comp[sort_index]:
             rev = True
+        
+        direction = "none"
+        if sort_index == 1 and rev:
+            direction = "left"
+        elif sort_index == 1 and not rev:
+            direction = "right"
+        elif sort_index == 0 and rev:
+            direction = "up"
+        else:
+            direction = "down"
 
-        line_tiles[i] = sorted(line,
-                               key=lambda x: x[sort_index],
-                               reverse=rev)
+        new_tiles = sorted(line,
+                           key=lambda x: x[sort_index],
+                           reverse=rev)
+        lines.append(new_tiles)
+        directions.append(direction)
+
+line_dic = {}
+
+for n, line in enumerate(lines):
+    for i, tile in enumerate(line):
+        line_dic[tile] = (n, i)
 
 # Creating rectangles to draw for each booth.
 booth_rects = []
@@ -93,6 +116,8 @@ company_names = []
 
 time_step = 0
 
+board = None
+
 with open(FLAGS.log_file, 'r') as log:
     for line in log:
         if sec1:
@@ -104,6 +129,7 @@ with open(FLAGS.log_file, 'r') as log:
                     bots.append(team)
             sec1, sec2, sec3 = False, True, False
         elif sec2:
+            board = Controller(bots, dim, line_dic, direction)
             if line == "\n":
                 sec1, sec2, sec3 = False, False, True
             else:
