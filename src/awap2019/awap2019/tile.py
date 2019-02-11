@@ -154,6 +154,9 @@ class Booth(object):
     def execute_step(self):
         """Executes steps for the line."""
         return (self.line).execute_step()
+    
+    def get_end(self):
+        return self.line.get_end()
 
 class Line(object):
     """

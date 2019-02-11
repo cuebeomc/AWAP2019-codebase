@@ -72,7 +72,8 @@ class Board(object):
         # TODO: Initialize the crowd!
 
         start_id = 0
-        self.bots.append(LineFollower(self, self.start, 1, start_id))
+        for i in range(0, 50):
+            self.bots.append(JitteryBot(self, self.start, 1, i))
         #for i in range(start_id, start_id + 5):
             #self.bots.append(JitteryBot(self, self.start, 1, i))
         

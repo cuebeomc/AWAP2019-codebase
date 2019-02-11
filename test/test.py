@@ -25,7 +25,7 @@ flags.DEFINE_integer('num_moves', 300, 'The number of moves in a game.')
 flags.DEFINE_string('config', 'boards/sample.txt', 'The path to the config file.')
 flags.DEFINE_string('companies', 'companies.txt', 'The path to the list of '
                                                   'companies.')
-flags.DEFINE_string('log_file', 'log.txt', 'The path to the log file.')
+flags.DEFINE_string('log_file', 'logs/test.txt', 'The path to the log file.')
 flags.DEFINE_boolean('debug', False, 'Debug mode')
 flags.DEFINE_integer('team_size', 4, 'The team size.')
 
