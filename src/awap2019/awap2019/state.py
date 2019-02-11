@@ -5,12 +5,13 @@ class State(object):
     def __init__(self, bot):
         team_id = bot.get_team_id()
         loc = bot.get_loc()
+        self.dir = bot.direction
         self.team_id = -1 if team_id is None else team_id
         self.id = bot.get_id()
         self.x = loc[0]
         self.y = loc[1]
         self.progress = bot.progress
-        self.threshold = bot.board.get(loc).get_threshold()
+        self.threshold = bot.board.get(loc.get_loc(self.dir)).get_threshold()
         self.line_pos = -1 if bot.line_pos is None else bot.line_pos
 
         if bot.is_in_line():

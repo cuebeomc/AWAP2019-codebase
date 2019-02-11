@@ -15,6 +15,7 @@ import sys
 FLAGS = flags.FLAGS
 flags.DEFINE_string("board_file", "boards/sample.txt", "Config file to build map.")
 flags.DEFINE_string("log_file", "log.txt", "Log file to read movements.")
+flags.DEFINE_integer("speed", 70, "# of intervals between one turn in the game.")
 
 FLAGS(sys.argv)
 
@@ -89,7 +90,6 @@ for i, line in enumerate(line_tiles):
         lines.append(new_tiles)
     directions.append(direction)
 
-print("lines: {}".format(lines))
 line_dic = {}
 
 for n, line in enumerate(lines):
@@ -143,152 +143,135 @@ with open(FLAGS.log_file, 'r') as log:
             else:
                 controller.parse_bot_state(bot_status)
 
-test = controller.get_bot_positions(0, 0)
-print("Asserted positions: {}".format(test))
+paths = []
+for a, team in enumerate(bots):
+    for b, bot in enumerate(team):
+        positions = controller.get_bot_positions(a, b)
 
-prev_state = None
-prev_tstep = None
-is_none = False
-prev_is_none = False
+        prev_state = None
+        prev_tstep = None
+        is_none = False
+        prev_is_none = False
 
-point_list = []
-speeds = []
-curr_points = []
-curr_speeds = []
-nones = []
+        point_list = []
+        speeds = []
+        nones = []
+        curr_points = []
+        curr_speeds = []
+        curr_nones = []
 
-max_tstep = 0
-for tstep, loc in test.items():
-    state = None
-    if loc:
-        state = (loc[1], loc[0])
-    if tstep == 0:
-        prev_state = state
-        prev_tstep = tstep
-        curr_points.append(prev_state)
-        continue
-    
-    if state == None:
+        max_tstep = 0
+        for tstep, loc in positions.items():
+            state = None
+            if loc:
+                state = (loc[1], loc[0])
+            if tstep == 0:
+                prev_state = state
+                prev_tstep = tstep
+                curr_points.append(prev_state)
+                continue
+            
+            if state == None:
+                if curr_points and not prev_is_none:
+                    point_list.append(curr_points)
+                    curr_points = [prev_state]
+                if curr_speeds and not prev_is_none:
+                    speeds.append(curr_speeds)
+                    curr_speeds = []
+                if prev_is_none:
+                    curr_nones.append(prev_state)
+                else:
+                    if curr_nones:
+                        nones.append(curr_nones)
+                        curr_nones = [prev_state]
+                    else:
+                        curr_nones = [prev_state]
+                prev_tstep = tstep
+                prev_is_none = True
+            else:
+                curr_points.append(state)
+                speed = tstep - prev_tstep
+                curr_speeds.append(speed)
+
+                prev_state = state
+                prev_tstep = tstep
+                prev_is_none = False
+            
+            max_tstep = tstep
         if curr_points and not prev_is_none:
             point_list.append(curr_points)
-            curr_points = [prev_state]
-            prev_tstep = tstep
         if curr_speeds and not prev_is_none:
             speeds.append(curr_speeds)
-            curr_speeds = []
-        nones.append(tstep)
-        prev_is_none = True
-    else:
-        curr_points.append(state)
-        speed = tstep - prev_tstep
-        curr_speeds.append(speed)
+        if curr_nones:
+            nones.append(curr_nones)
 
-        prev_state = state
-        prev_tstep = tstep
-        prev_is_none = False
-    
-    max_tstep = tstep
-if curr_points and not prev_is_none:
-    point_list.append(curr_points)
-if curr_speeds and not prev_is_none:
-    speeds.append(curr_speeds)
+        total_points = []
+        for i, points in enumerate(point_list):
+            if len(points) == 1:
+                total_points.append(np.full((FLAGS.speed), points[0]))
+            elif len(points) == 2:
+                sample_space = FLAGS.speed * speeds[i][0]
+                x1, y1 = points[0]
+                x2, y2 = points[1]
+                x_coords = np.linspace(x1, x2, sample_space, endpoint=False)
+                y_coords = np.linspace(y1, y2, sample_space, endpoint=False)
+                points = np.array([x_coords, y_coords]).T
+                total_points.append(points)
+                continue
 
-BASE_SPEED = 50
+            np_points = np.array(points)
+            distance = np.cumsum(np.sqrt(np.sum(np.diff(np_points, axis=0)**2, axis=1)))
+            distance = np.insert(distance, 0, 0)/distance[-1]
 
-print(nones)
-print(point_list)
-print(speeds)
+            speed = speeds[i]
+            alpha = np.array([])
 
-total_points = []
-for i, points in enumerate(point_list):
-    if len(points) == 2:
-        sample_space = BASE_SPEED * speeds[i][0]
-        x1, y1 = points[0]
-        x2, y2 = points[1]
-        x_coords = np.linspace(x1, x2, sample_space, endpoint=False)
-        y_coords = np.linspace(y1, y2, sample_space, endpoint=False)
-        points = np.array([x_coords, y_coords]).T
-        total_points.append(points)
-        continue
+            for x in range(len(distance) - 1):
+                new_section = np.linspace(distance[x], distance[x+1], FLAGS.speed * speed[x], endpoint=False)
+                alpha = np.concatenate((alpha, new_section))
+            
+            interpolator = interp1d(distance, points, kind='quadratic', axis=0)
+            np_points = interpolator(alpha)
+            total_points.append(np_points)
 
-    np_points = np.array(points)
-    print(np_points)
-    distance = np.cumsum(np.sqrt(np.sum(np.diff(np_points, axis=0)**2, axis=1)))
-    distance = np.insert(distance, 0, 0)/distance[-1]
-    print(distance)
-    speed = np.array(speeds[i])
-    alpha = np.array([])
-    print(speed)
-
-    for x in range(len(distance) - 1):
-        new_section = np.linspace(distance[x], distance[x+1], BASE_SPEED * speed[x], endpoint=False)
-        alpha = np.concatenate((alpha, new_section))
-    
-    interpolator = interp1d(distance, points, kind='quadratic', axis=0)
-    np_points = interpolator(alpha)
-    total_points.append(np_points)
-
-print(total_points)
-# Add in time where bot is still!
-path = np.concatenate(total_points)
-
-print("length of path: {}".format(len(path)))
-
-    
-
-points = np.array([[0.5, 1.5, 1.5, 2.5, 2.5],
-                   [0.5, 0.5, 1.5, 1.5, 2.5]]).T  # a (nbre_points x nbre_dim) array
-
-print(points)
-
-print("Done defining points. Defining distances...")
-
-# Linear length along the line:
-distance = np.cumsum( np.sqrt(np.sum( np.diff(points, axis=0)**2, axis=1 )) )
-print("Distance points: {}".format(distance))
-distance = np.insert(distance, 0, 0)/distance[-1]
-print("Scaled distance points: {}".format(distance))
-
-print("Done defining distances. Creating interpolation...")
-
-speed = np.array([2, 1, 2, 1])
-
-alpha = np.array([])
-for i in range(len(distance) - 1):
-    end = False
-    if i == len(distance) - 2:
-        end = True
-    new_section = np.linspace(distance[i], distance[i+1], 50 * speed[i] + (1 if end else 0), endpoint=end)
-    alpha = np.concatenate((alpha, new_section))
-
-interpolator = interp1d(distance, points, kind='quadratic', axis=0)
-points = interpolator(alpha)
-
-print("Created interpolation. Creating figure...")
-
-patch = bots[0][0]
+        path = np.empty(shape=(0, 2))
+        for i, step in enumerate(total_points):
+            path = np.concatenate((path, step))
+            try:
+                for loc in nones[i]:
+                    still_frames = [loc for _ in range(FLAGS.speed)]
+                    path = np.concatenate((path, still_frames))
+            except:
+                continue
+        paths.append(path)
 
 # Removing ticks on axes and starting (0, 0) at top right.
 ax.set_xticks([])
 ax.set_yticks([])
 ax.invert_yaxis()
 
+flattened = [bot for team in bots for bot in team]
+num_frames = len(paths[0])
+
 def init():
-    patch.center = (0, 0)
     for rect in booth_rects:
         ax.add_patch(rect)
-    ax.add_patch(patch)
-    return [patch] + booth_rects
+    for bot in flattened:
+        ax.add_patch(bot)
+    return flattened + booth_rects
 
 def animate(i):
-    index = i % len(path)
-    patch.center = path[index]
-    return [patch] + booth_rects
+    index = i % len(paths[0])
+    for j, bot in enumerate(flattened):
+        bot.center = paths[j][index]
+    return flattened + booth_rects
 
-anim = animation.FuncAnimation(fig, animate, 
+anim = animation.FuncAnimation(fig, animate,
+                               frames=num_frames,
                                init_func=init,
                                interval=20,
-                               blit=True)
-
+                               blit=True,
+                               repeat=False)
+#anim.save('output/animation.gif', writer='imagemagick')
 plt.show()
 

@@ -70,7 +70,8 @@ class Board(object):
                 team_i.append(Bot(self, self.start, 1, j, team_id=i))
             (self.player_bots).append(team_i)
         # TODO: Initialize the crowd!
-        start_id = self.team_size
+
+        start_id = 0
         self.bots.append(LineFollower(self, self.start, 1, start_id))
         #for i in range(start_id, start_id + 5):
             #self.bots.append(JitteryBot(self, self.start, 1, i))
@@ -268,10 +269,17 @@ class Board(object):
 
     def _log(self, mode):
         with open(self.log_file, mode) as log:
-            log.write("{}\n".format(self.time_step))
+            if mode == 'w':
+                team2 = self.team_size if self.players == 2 else 0
+                log.write("{} {} {}\n".format(self.team_size, team2,
+                                              len(self.bots)))
+                for company in self.chosen_companies:
+                    log.write("{}\n".format(company))
+                log.write("\n")
+
             for team in self.player_bots:
                 for bot in team:
-                    log.write("{}\n".format(State(bot)))
+                    log.write("{}\n".format(State(bot).get_num_encoding()))
             for bot in self.bots:
-                log.write("{}\n".format(State(bot)))
+                log.write("{}\n".format(State(bot).get_num_encoding()))
         self.time_step += 1
