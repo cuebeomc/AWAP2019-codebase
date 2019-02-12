@@ -72,7 +72,7 @@ class Board(object):
         # TODO: Initialize the crowd!
 
         start_id = 0
-        for i in range(0, 50):
+        for i in range(0, 400):
             self.bots.append(JitteryBot(self, self.start, 1, i))
         #for i in range(start_id, start_id + 5):
             #self.bots.append(JitteryBot(self, self.start, 1, i))
@@ -278,6 +278,7 @@ class Board(object):
                     log.write("{}\n".format(company))
                 log.write("\n")
 
+            log.write("{}\n".format(self.time_step))
             for team in self.player_bots:
                 for bot in team:
                     log.write("{}\n".format(State(bot).get_num_encoding()))

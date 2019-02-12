@@ -82,11 +82,15 @@ class Tile(object):
         elif pop == 4:
             self.threshold = 2
         elif pop == 5:
-            self.threshold = 3
+            self.threshold = 2
         elif pop == 6:
+            self.threshold = 3
+        elif pop == 7:
+            self.threshold = 3
+        elif pop == 8:
             self.threshold = 4
         else:
-            self.threshold = 10
+            self.threshold = 6
 
     def get_bots_in_line(self):
         return self.bots_in_line
@@ -217,6 +221,7 @@ class Line(object):
         else:
             self.current_talker = None
         for i, bot in enumerate(full_line):
+            bot.in_line = True
             bot.line_pos = i
             bot.line_name = self.name
 

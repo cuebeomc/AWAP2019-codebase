@@ -29,7 +29,6 @@ line_tiles = []
 y = 0
 
 fig = plt.figure(figsize=(8, 6))
-ax = plt.axes(xlim=(0, 24), ylim=(0, 18))
 
 with open(FLAGS.board_file, 'r') as config:
     for line in config:
@@ -206,9 +205,14 @@ for a, team in enumerate(bots):
             nones.append(curr_nones)
 
         total_points = []
+        # print("Point list: {}:".format(point_list))
+        # print("Speeds: {}".format(speeds))
+        # print("Nones: {}".format(nones))
+
         for i, points in enumerate(point_list):
             if len(points) == 1:
-                total_points.append(np.full((FLAGS.speed), points[0]))
+                total_points.append(np.full((FLAGS.speed, 2), points[0]))
+                continue
             elif len(points) == 2:
                 sample_space = FLAGS.speed * speeds[i][0]
                 x1, y1 = points[0]
@@ -219,6 +223,7 @@ for a, team in enumerate(bots):
                 total_points.append(points)
                 continue
 
+            # print(points)
             np_points = np.array(points)
             distance = np.cumsum(np.sqrt(np.sum(np.diff(np_points, axis=0)**2, axis=1)))
             distance = np.insert(distance, 0, 0)/distance[-1]
@@ -236,6 +241,8 @@ for a, team in enumerate(bots):
 
         path = np.empty(shape=(0, 2))
         for i, step in enumerate(total_points):
+            # print(np.shape(step))
+            # print(np.shape(path))
             path = np.concatenate((path, step))
             try:
                 for loc in nones[i]:

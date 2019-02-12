@@ -143,4 +143,4 @@ class Tile(object):
         dim0 = num // self.length
         dim1 = num % self.length
 
-        return ((3 * self.loc[0]) + dim0 + 0.5, (3 * self.loc[1]) + dim1 + 0.5)
+        return ((3 * self.loc[0]) + dim0 + 0.5 + random.uniform(-0.15, 0.15), (3 * self.loc[1]) + dim1 + 0.5 + random.uniform(-0.15, 0.15))
