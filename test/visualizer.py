@@ -15,12 +15,13 @@ import sys
 FLAGS = flags.FLAGS
 flags.DEFINE_string("board_file", "boards/sample.txt", "Config file to build map.")
 flags.DEFINE_string("log_file", "log.txt", "Log file to read movements.")
-flags.DEFINE_integer("speed", 70, "# of intervals between one turn in the game.")
+flags.DEFINE_integer("speed", 40, "# of intervals between one turn in the game.")
 
 FLAGS(sys.argv)
 
-# Parsing board file.
-# NOTE: All (x, y) from here is plot-style (x, y), not array notation.
+########################
+## Parsing board file ##
+########################
 
 first_line = True
 dim = None
@@ -28,7 +29,7 @@ booth_tiles = []
 line_tiles = []
 y = 0
 
-fig = plt.figure(figsize=(8, 6))
+fig = plt.figure(figsize=(8, 8))
 
 with open(FLAGS.board_file, 'r') as config:
     for line in config:
@@ -58,7 +59,10 @@ ax = plt.axes(xlim=(0, dim[0] * 3), ylim=(0, dim[1] * 3))
 lines = []
 directions = []
 
-# Sorting each line to have proper ordering from start to end.
+###################
+## Sorting lines ##
+###################
+
 for i, line in enumerate(line_tiles):
     direction = "none"
     if len(line) > 1:
@@ -95,7 +99,10 @@ for n, line in enumerate(lines):
     for i, tile in enumerate(line):
         line_dic[tile] = (n, i)
 
-# Creating rectangles to draw for each booth.
+#########################
+## Creating rectangles ##
+#########################
+
 booth_rects = []
 for booth in booth_tiles:
     lx, ly = booth[0]
@@ -103,7 +110,9 @@ for booth in booth_tiles:
     w, h = (ux - lx + 1) * 3, (uy - ly + 1) * 3
     booth_rects.append(plt.Rectangle((lx * 3, ly * 3), w, h, edgecolor='k', facecolor='#8b8989'))
 
-# Parsing log file.
+######################
+## Parsing log file ##
+######################
 
 sec1 = True   # First section is # of bots
 sec2 = False  # Second section is the names of the companies
@@ -115,7 +124,6 @@ bots = []
 company_names = []
 
 time_step = 0
-
 board = None
 
 with open(FLAGS.log_file, 'r') as log:
@@ -144,6 +152,7 @@ with open(FLAGS.log_file, 'r') as log:
 
 paths = []
 for a, team in enumerate(bots):
+    team_paths = []
     for b, bot in enumerate(team):
         positions = controller.get_bot_positions(a, b)
 
@@ -204,14 +213,17 @@ for a, team in enumerate(bots):
         if curr_nones:
             nones.append(curr_nones)
 
-        total_points = []
-        # print("Point list: {}:".format(point_list))
-        # print("Speeds: {}".format(speeds))
-        # print("Nones: {}".format(nones))
+        #print("len of points: {}".format(np.shape(point_list)))
+        #print("len of nones: {}".format(np.shape(nones)))
+        #print("len of speeds: {}".format(np.shape(speeds)))
+        #_ = input("Test!: ")
 
+        total_points = []
+
+        prev_point = None
         for i, points in enumerate(point_list):
             if len(points) == 1:
-                total_points.append(np.full((FLAGS.speed, 2), points[0]))
+                total_points.append([points[0]])
                 continue
             elif len(points) == 2:
                 sample_space = FLAGS.speed * speeds[i][0]
@@ -241,24 +253,33 @@ for a, team in enumerate(bots):
 
         path = np.empty(shape=(0, 2))
         for i, step in enumerate(total_points):
-            # print(np.shape(step))
-            # print(np.shape(path))
-            path = np.concatenate((path, step))
+            if len(step) == 1:
+                for _ in nones[i]:
+                    still_frames = [step[0] for _ in range(FLAGS.speed)]
+                    path = np.concatenate((path, still_frames))
+                continue
+
+            path = np.concatenate((path, step))    
             try:
                 for loc in nones[i]:
                     still_frames = [loc for _ in range(FLAGS.speed)]
                     path = np.concatenate((path, still_frames))
             except:
                 continue
-        paths.append(path)
+        team_paths.append(path)
+    paths.append(team_paths)
 
 # Removing ticks on axes and starting (0, 0) at top right.
 ax.set_xticks([])
 ax.set_yticks([])
 ax.invert_yaxis()
 
-flattened = [bot for team in bots for bot in team]
-num_frames = len(paths[0])
+flattened = [bot for team in reversed(bots) for bot in reversed(team)]
+flat_paths = [path for team_paths in reversed(paths) for path in reversed(team_paths)]
+num_frames = len(flat_paths[0])
+
+#for path in flat_paths:
+#    print("length of this path: {}".format(len(path)))
 
 def init():
     for rect in booth_rects:
@@ -268,9 +289,9 @@ def init():
     return flattened + booth_rects
 
 def animate(i):
-    index = i % len(paths[0])
+    index = i % len(flat_paths[0])
     for j, bot in enumerate(flattened):
-        bot.center = paths[j][index]
+        bot.center = flat_paths[j][index]
     return flattened + booth_rects
 
 anim = animation.FuncAnimation(fig, animate,
@@ -279,6 +300,7 @@ anim = animation.FuncAnimation(fig, animate,
                                interval=20,
                                blit=True,
                                repeat=False)
+
 #anim.save('output/animation.gif', writer='imagemagick')
 plt.show()
 

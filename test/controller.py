@@ -85,7 +85,11 @@ class Tile(object):
     def __init__(self, x, y, direction=None, line_pos=None, side=3):
         self.is_line = line_pos != None
         self.direction = direction
-        self.line_pos = line_pos
+        self.lp_low = 0
+        self.lp_high = 0
+        if self.is_line:
+            self.lp_low = side * line_pos
+            self.lp_high = side * (line_pos + 1)
         self.length = side
         self.loc = (x, y)
         self.bots = {}
@@ -123,6 +127,8 @@ class Tile(object):
 
     def assign_lp(self, uid, line_pos):
         actual_pos = line_pos % self.length
+        if self.is_line and not self.lp_low <= line_pos < self.lp_high:
+            actual_pos = 2
         num_arr = None
         if self.direction == "right":
             num_arr = [3, 4, 5]

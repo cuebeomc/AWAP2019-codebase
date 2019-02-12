@@ -78,19 +78,19 @@ class Tile(object):
         elif pop == 2:
             self.threshold = 1
         elif pop == 3:
-            self.threshold = 2
+            self.threshold = 1
         elif pop == 4:
             self.threshold = 2
         elif pop == 5:
             self.threshold = 2
         elif pop == 6:
-            self.threshold = 3
+            self.threshold = 2
         elif pop == 7:
             self.threshold = 3
         elif pop == 8:
-            self.threshold = 4
+            self.threshold = 3
         else:
-            self.threshold = 6
+            self.threshold = 5
 
     def get_bots_in_line(self):
         return self.bots_in_line
