@@ -11,7 +11,7 @@ class StillBot(Bot):
     def compute_step(self):
         src = self.loc
         dest = (4, 1)
-        x = BFS(self.board, src, dest)
+        x = BFS(self.board, src, lambda tile: tile.get_loc() == dest)
         print("BFS list: {}".format(x))
         return self.move
 

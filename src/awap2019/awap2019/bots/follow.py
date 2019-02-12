@@ -6,12 +6,19 @@ class LineFollower(Bot):
     def __init__(self, board, loc, speed, id):
         super().__init__(board, loc, speed, id)
         self.queue = []
+        self.visited = set()
     
     def compute_step(self):
-        if not self.queue:
+        if not self.is_in_line():
             src = self.loc
-            dest = (4, 1)
-            self.queue = BFS(self.board, src, dest)
+            self.queue = BFS(self.board, src, 
+                             lambda tile: tile.is_end_of_line() \
+                             and tile.is_part_of_line() not in self.visited)
+            if self.queue is None:
+                self.visited = set()
+                self.queue = BFS(self.board, src, 
+                             lambda tile: tile.is_end_of_line() \
+                             and tile.is_part_of_line() not in self.visited)
 
         if self.queue:
             if self.loc == self.queue[0]:
@@ -19,3 +26,6 @@ class LineFollower(Bot):
             if self.queue:
                 first_tile = self.queue[0]
                 self.new_direction = Direction.get_dir(self.loc, first_tile)
+            else:
+                self.new_direction = Direction.ENTER
+                self.visited.add(self.board.get(self.loc).is_part_of_line())

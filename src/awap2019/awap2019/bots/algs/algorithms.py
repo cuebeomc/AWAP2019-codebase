@@ -1,7 +1,7 @@
 from ...direction import Direction
 from random import shuffle
 
-def BFS(board, src, dest):
+def BFS(board, src, p):
     dirs = [Direction.LEFT, Direction.UP, Direction.RIGHT, Direction.DOWN]
 
     queue = [[src]]
@@ -11,7 +11,9 @@ def BFS(board, src, dest):
         path = queue.pop(0)
         node = path[-1]
 
-        if node == dest:
+        tile = board.get(node)
+
+        if p(tile):
             return path
         if node not in visited:
             visited.add(node)
