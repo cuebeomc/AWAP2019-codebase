@@ -150,7 +150,7 @@ class Booth(object):
         for tile in booth_tiles:
             tile.set_booth(name)
         self.line = Line(self.name, line_tiles, wait_time)
-        self.value
+        self.value = value
 
     def get_size(self):
         """Gets the size of the company."""
