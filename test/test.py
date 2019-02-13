@@ -33,8 +33,8 @@ def main(_):
     g = Game(FLAGS.config, FLAGS.companies, FLAGS.log_file,
              FLAGS.m, FLAGS.debug, FLAGS.team_size)
     print("Companies: ")
-    for booth in g.board.booths:
-        print(booth.name)
+    for name in g.board.booths:
+        print(name)
     print()
 
     grid = g.generate_player_copy(init=True)

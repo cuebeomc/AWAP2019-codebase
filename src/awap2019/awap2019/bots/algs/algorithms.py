@@ -24,7 +24,9 @@ def BFS(board, src, p):
         locs = [direction.get_loc(node) for direction in dirs]
         for loc in locs:
             tile = board.get(loc)
-            if tile != None and tile.get_booth() == None:
+            if tile != None and p(tile):
+                return list(path) + [loc]
+            if tile != None and tile.get_booth() is None:
                 new_path = list(path)
                 new_path.append(loc)
                 queue.append(new_path)

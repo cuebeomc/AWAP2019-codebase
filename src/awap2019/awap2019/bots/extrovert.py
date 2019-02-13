@@ -3,12 +3,35 @@ from ..direction import Direction
 from .algs import BFS
 
 class ExtrovertBot(Bot):
+    '''
+    ExtrovertBot find the position in the map where there are the most amount
+    of people.
+    '''
+
+    ''' 
+    We add this value to the population of the neighborhood tiles when
+    deciding whether or to the change the destination tile to a different
+    adjacent tile. This is added just in case our ExtrovertBot changes
+    directions too often and ultimately does not move. Increase this
+    value to ensure the bot moves more, decrese this value so that
+    its more purely an extrovert.
+    Example:
+    Set this to zero if you always want to change your destination tile
+    to the neighboring location with the most people.
+    Example:
+    Set this to one if one of the neighboring locations needs two more
+    people on it for this bot the change their direction.
+    '''
+    REORIENT_COST = 2
+
     def __init__(self, board, loc, speed, id):
         super().__init__(board, loc, speed, id)
         self.queue = []
-        self.REORIENT_COST = 2
 
     def find_big_brain(self):
+        '''
+        Finds the tile with the most people.
+        '''
         max_pop = 0
         max_point = None
 

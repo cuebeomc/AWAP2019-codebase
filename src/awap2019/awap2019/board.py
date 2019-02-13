@@ -39,7 +39,7 @@ class Board(object):
         self.team_size = team_size
 
         self.grid = []
-        self.booths = []
+        self.booths = dict()
         self.dim = (None, None)
         self.company_list = {'S': set(), 'M': set(), 'L': set()}
         self.chosen_companies = set()
@@ -138,7 +138,8 @@ class Board(object):
                 bot.execute_step()
 
         talked_booths = []
-        for booth in self.booths:
+        for name in self.booths:
+            booth = self.booths[name]
             val = booth.execute_step()
             if val:
                 talked_booths.append(val)
@@ -266,7 +267,7 @@ class Board(object):
         for size, b_tiles, l_tiles in zip(sizes, booth_tiles, line_tiles):
             name = self._pick_company(size)
             time = self._random_time(size)
-            (self.booths).append(Booth(name, size, b_tiles, l_tiles, time))
+            (self.booths)[name] = Booth(name, size, b_tiles, l_tiles, time)
 
     def _log(self, mode):
         with open(self.log_file, mode) as log:
