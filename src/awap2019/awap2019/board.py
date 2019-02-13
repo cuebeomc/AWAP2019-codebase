@@ -14,6 +14,13 @@ import numpy as np
 import random
 
 class Board(object):
+
+    wait_time = 1
+    major_reward = 10
+    minor_reward = 5
+
+    # add constants regarding main player + min player scores?
+
     """
     Sample configuration file:
     6 8 6
@@ -24,7 +31,7 @@ class Board(object):
     S1  F  2 E3  5 E4  F F
     F  S2 S2 L5 L5 L5 L5 F
     """
-    def __init__(self, config_file, company_file, log_file, debug, team_size):
+    def __init__(self, config_file, company_file, log_file, debug, team_size, num_players):
         """Initializes the Board class.
 
         grid: Grid of tiles
@@ -46,22 +53,26 @@ class Board(object):
 
         self.player_bots = []
         self.bots = []
-        self.players = 1
+        self.players = num_players
         self.start = None
+
+        self.company_values = {}
 
         self._parse_companies(company_file)
         self._parse(config_file)
 
         self.debug = debug
 
+        # 2 players at most
+        self.scores = [0] * self.players
+        self.rewards = [self.company_values.copy() for _ in range(self.players)]
+
     def dbg_print(self, str):
         if self.debug:
             print(str)
 
-    def init_bots(self, multiplayer):
+    def init_bots(self):
         """Places the bots onto the board."""
-        if multiplayer:
-            self.players = 2
         # Do the initialization of multiple bots/place them!
         for i in range(self.players):
             # First bot in this list is main bot by standard.
@@ -69,10 +80,11 @@ class Board(object):
             for j in range(self.team_size):
                 team_i.append(Bot(self, self.start, 1, j, team_id=i))
             (self.player_bots).append(team_i)
+
         # TODO: Initialize the crowd!
 
         start_id = 0
-        for i in range(0, 400):
+        for i in range(0, 1):
             self.bots.append(JitteryBot(self, self.start, 1, i))
         #for i in range(start_id, start_id + 5):
             #self.bots.append(JitteryBot(self, self.start, 1, i))
@@ -147,6 +159,9 @@ class Board(object):
         self.dbg_print(np.matrix(self.grid))
         self._update_board()
         self._log('a+')
+
+        self.scores = updated_scores
+
         return updated_scores
 
     def _swap(self, arr, index):
@@ -162,10 +177,13 @@ class Board(object):
         for name, team_id, id in talked:
             # Change these values to add prioritization for
             # certain companies!
+            reward_dict = self.rewards[team_id]
+            (major, minor) = reward_dict[name]
             if id == 0:
-                scores[team_id] += 2
+                scores[team_id] += major
             else:
-                scores[team_id] -= 1
+                scores[team_id] += minor
+            reward_dict[name] = (major//2, minor//2)
         return scores
 
     def get_visible_locs(self, team):
@@ -196,8 +214,8 @@ class Board(object):
         file = open(file_path, "r")
         for line in file:
             split_line = line.split()
-            company, size = split_line[0], split_line[1]
-            self.company_list[size].add(company)
+            company, size, value = split_line[0], split_line[1], int(split_line[2])
+            self.company_list[size].add((company, value))
 
     def _pick_company(self, size):
         """Picks a company from the list of all companies."""
@@ -212,7 +230,7 @@ class Board(object):
     def _random_time(self, size):
         """Picks a random time. Currently 5, will change if we decide to add
         random times."""
-        return 5
+        return Board.wait_time
 
     def _parse(self, file_path):
         """Parses a config file into a grid of tiles and booths."""
@@ -264,9 +282,10 @@ class Board(object):
                     c += 1
                 r += 1
         for size, b_tiles, l_tiles in zip(sizes, booth_tiles, line_tiles):
-            name = self._pick_company(size)
+            name, value = self._pick_company(size)
+            self.company_values[name] = (value, value//2)
             time = self._random_time(size)
-            (self.booths).append(Booth(name, size, b_tiles, l_tiles, time))
+            (self.booths).append(Booth(name, size, b_tiles, l_tiles, time, value))
 
     def _log(self, mode):
         with open(self.log_file, mode) as log:
@@ -278,7 +297,7 @@ class Board(object):
                     log.write("{}\n".format(company))
                 log.write("\n")
 
-            log.write("{}\n".format(self.time_step))
+            log.write("{} {} {}\n".format(self.time_step, self.scores[0], self.scores[1] if self.players > 1 else 0))
             for team in self.player_bots:
                 for bot in team:
                     log.write("{}\n".format(State(bot).get_num_encoding()))
