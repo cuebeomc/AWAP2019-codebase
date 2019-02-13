@@ -4,9 +4,10 @@ class Game(object):
     def __init__(self, config_file, companies, log_file, multiplayer, debug, team_size):
         """Initialize a game instance."""
         self.players = 2 if multiplayer else 1
-        self.board = Board(config_file, companies, log_file, debug, team_size)
+        self.board = Board(config_file, companies, log_file, debug, team_size,
+            2 if multiplayer else 1)
         self._copy()
-        (self.board).init_bots(multiplayer)
+        (self.board).init_bots()
 
         self.scoreboard = [0] * self.players
 

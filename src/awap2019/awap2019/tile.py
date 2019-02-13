@@ -132,7 +132,7 @@ class Tile(object):
         return new_tile
 
 class Booth(object):
-    def __init__(self, name, size, booth_tiles, line_tiles, wait_time):
+    def __init__(self, name, size, booth_tiles, line_tiles, wait_time, value):
         """Booth handles the set of tiles that constitute a company's booth.
         It initializes the lines and stores them.
 
@@ -150,6 +150,7 @@ class Booth(object):
         for tile in booth_tiles:
             tile.set_booth(name)
         self.line = Line(self.name, line_tiles, wait_time)
+        self.value
 
     def get_size(self):
         """Gets the size of the company."""
