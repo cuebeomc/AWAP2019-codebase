@@ -27,7 +27,6 @@ class RealisticBot(Bot):
             self.to_visit = "S"
     
     def compute_step(self):
-        print ("{} {} {} {}".format(self.queue, self.loc, self.visited, self.to_visit))
         if not self.is_in_line():
             src = self.loc
             self.queue = BFS(self.board, src, 
