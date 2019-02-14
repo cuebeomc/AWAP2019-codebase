@@ -14,10 +14,9 @@ class RandomBot(Bot):
         super().__init__(board, loc, speed, id)
         self.queue = []
         self.choices = None
-        if size is None:
+        self.choices = [name for name in self.board.booths if self.board.booths[name].get_size() == size]
+        if len(self.choices) == 0:
             self.choices = [name for name in self.board.booths]
-        else:
-            self.choices = [name for name in self.board.booths if self.board.booths[name].get_size() == size]
         self.booth = None
     
     def compute_step(self):

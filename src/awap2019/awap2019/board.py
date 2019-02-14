@@ -84,8 +84,27 @@ class Board(object):
         # TODO: Initialize the crowd!
 
         start_id = 0
-        for i in range(0, 1):
-            self.bots.append(JitteryBot(self, self.start, 1, i))
+        for i in range(0, self.num_bots//10):
+            num = i
+            self.bots.append(JitteryBot(self, self.start, 1, num))
+            num += 1
+            self.bots.append(ExtrovertBot(self, self.start, 1, num))
+            num += 1
+            self.bots.append(ExtrovertBot(self, self.start, 1, num))
+            num += 1
+            self.bots.append(RandomBot(self, self.start, 1, num, "L"))
+            num += 1
+            self.bots.append(RandomBot(self, self.start, 1, num, "L"))
+            num += 1
+            self.bots.append(RandomBot(self, self.start, 1, num, "L"))
+            num += 1
+            self.bots.append(RandomBot(self, self.start, 1, num, "S"))
+            num += 1
+            self.bots.append(RandomBot(self, self.start, 1, num, "M"))
+            num += 1
+            self.bots.append(RandomBot(self, self.start, 1, num, "M"))
+            num += 1
+            self.bots.append(RandomBot(self, self.start, 1, num))
         #for i in range(start_id, start_id + 5):
             #self.bots.append(JitteryBot(self, self.start, 1, i))
         
@@ -255,6 +274,7 @@ class Board(object):
                         #row.append(Tile(i, j))
                     #(self.grid).append(row)
                 num_companies = int(dims[2])
+                self.num_bots = int(dims[3])
                 sizes = [None] * num_companies
                 booth_tiles = [[] for _ in range(num_companies)]
                 line_tiles = [[] for _ in range(num_companies)]
