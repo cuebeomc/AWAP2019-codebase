@@ -13,12 +13,12 @@ class LineFollower(Bot):
             src = self.loc
             self.queue = BFS(self.board, src, 
                              lambda tile: tile.is_end_of_line() \
-                             and tile.is_part_of_line() not in self.visited)
+                             and tile.get_line() not in self.visited)
             if self.queue is None:
                 self.visited = set()
                 self.queue = BFS(self.board, src, 
                              lambda tile: tile.is_end_of_line() \
-                             and tile.is_part_of_line() not in self.visited)
+                             and tile.get_line() not in self.visited)
 
         if self.queue:
             if self.loc == self.queue[0]:
@@ -28,4 +28,4 @@ class LineFollower(Bot):
                 self.new_direction = Direction.get_dir(self.loc, first_tile)
             else:
                 self.new_direction = Direction.ENTER
-                self.visited.add(self.board.get(self.loc).is_part_of_line())
+                self.visited.add(self.board.get(self.loc).get_line())

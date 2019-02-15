@@ -1,7 +1,7 @@
 from .board import Board
 
 class Game(object):
-    def __init__(self, config_file, companies, log_file, multiplayer, debug, team_size):
+    def __init__(self, config_file, companies, log_file, multiplayer, debug=False, team_size=4):
         """Initialize a game instance."""
         self.players = 2 if multiplayer else 1
         self.board = Board(config_file, companies, log_file, debug, team_size,

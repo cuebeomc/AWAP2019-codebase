@@ -33,24 +33,33 @@ class Tile(object):
         #return "({}, {})".format(len(self.bots), len(self.bots_in_line))
 
     # Getters that are available to players.
-    def is_part_of_line(self):
+    def get_line(self):
         """
-        Returns the name of the company the line is for if it is part
-        of a line. Otherwise, None."""
+        If this tile is part of a line, returns the name of the company
+        it is a line for. Otherwise, returns None."""
         return self.line
 
     def get_booth(self):
         """
-        Return the name of the booth if it is part of a booth.
-        Otherwise, None."""
+        If this tile is part of a booth, returns the name of the company
+        of the booth. Otherwise, returns None."""
         return self.booth
 
     def get_num_bots(self):
-        """Returns the number of bots on this tile."""
+        """
+        Returns the number of bots on this tile.
+        
+        If the tile is part of a line, the number of bots on the tile
+        includes the number of bots in the line."""
         return len(self.bots) + len(self.bots_in_line)
 
     def is_end_of_line(self):
-        """Returns true if this tile contains the end of a line."""
+        """
+        If the current end of the line is on this tile, returns True.
+        Otherwise, returns False.
+        
+        Note that this method returns False even if this line is not
+        part of a tile (tile.get_line() == None)."""
         return self.end_of_line
 
     # Setters used only in initialization

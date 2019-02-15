@@ -18,6 +18,7 @@ class Board(object):
     wait_time = 1
     major_reward = 10
     minor_reward = 5
+    visible_range = 2
 
     # add constants regarding main player + min player scores?
 
@@ -212,8 +213,8 @@ class Board(object):
         team_bots = self.player_bots[team]
         for bot in team_bots:
             x, y = bot.get_loc()
-            for i in [x-1, x, x+1]:
-                for j in [y-1, y, y+1]:
+            for i in [x-Board.visible_range, x, x+Board.visible_range]:
+                for j in [y-Board.visible_range, y, y+Board.visible_range]:
                     if 0 <= i < self.dim[0] and 0 <= j < self.dim[1]:
                         visible_locs.add((i, j))
         return list(visible_locs)

@@ -42,7 +42,7 @@ class RealisticBot(Bot):
                                  self.board.booths.get(tile.get_booth()) and \
                                  self.board.booths.get(tile.get_booth()).get_size() == self.to_visit \
                                  and tile.get_booth() not in self.visited)
-            self.queue = BFS(self.board, src, lambda tile: tile.is_part_of_line() == self.board.get(self.queue[-1]).get_booth())
+            self.queue = BFS(self.board, src, lambda tile: tile.get_line() == self.board.get(self.queue[-1]).get_booth())
 
         if self.queue:
             if self.loc == self.queue[0]:
@@ -52,4 +52,4 @@ class RealisticBot(Bot):
                 self.new_direction = Direction.get_dir(self.loc, first_tile)
             else:
                 self.new_direction = Direction.ENTER
-                self.visited.add(self.board.get(self.loc).is_part_of_line())
+                self.visited.add(self.board.get(self.loc).get_line())
