@@ -29,6 +29,17 @@ LiquidNet
 """
 
 raw_companies = """
+SapioScience S
+HyannisPortResearch S
+CUBRC S
+Formlabs S
+Proofpoint M
+RoviSys S
+Qokka S
+RobotWits S
+BuildZoom S
+LutronElectronics M
+Aruba M
 Amazon L
 AmazonRobotics L
 Boeing L
@@ -122,7 +133,23 @@ for company in new_companies.keys():
 
 new_companies_list = sorted(new_companies_list)
 
+num_small = 0
+num_medium = 0
+num_large = 0
+num_sponsor = 0
+for company in new_companies.keys():
+	if new_companies[company] == "S":
+		num_small += 1
+	elif new_companies[company] == "M":
+		num_medium += 1
+	elif new_companies[company] == "L":
+		num_large += 1
+	elif new_companies[company] == "XL":
+		num_sponsor += 1
+
 print("Num unique companies  ", len(new_companies_list))
+print("Got smalls: {} medium: {} large: {}".format(
+	num_small, num_medium, num_large + num_sponsor))
 
 def get_value(size):
 	if not size in values:
