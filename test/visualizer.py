@@ -212,11 +212,6 @@ for a, team in enumerate(bots):
         if curr_nones:
             nones.append(curr_nones)
 
-        #print("len of points: {}".format((point_list)))
-        #print("len of nones: {}".format((nones)))
-        #print("len of speeds: {}".format((speeds)))
-        #_ = input("Test!: ")
-
         total_points = []
 
         prev_point = None
@@ -275,10 +270,10 @@ ax.invert_yaxis()
 
 flattened = [bot for team in reversed(bots) for bot in reversed(team)]
 flat_paths = [path for team_paths in reversed(paths) for path in reversed(team_paths)]
-num_frames = len(flat_paths[0])
+num_frames = max_tstep * FLAGS.speed
 
-#for path in flat_paths:
-#    print("length of this path: {}".format(len(path)))
+for i, path in enumerate(flat_paths):
+    flat_paths[i] = np.pad(path, pad_width=(0, num_frames-len(path)), mode='edge')
 
 def init():
     for rect in booth_rects:
@@ -288,7 +283,7 @@ def init():
     return flattened + booth_rects
 
 def animate(i):
-    index = i % len(flat_paths[0])
+    index = i % num_frames
     for j, bot in enumerate(flattened):
         bot.center = flat_paths[j][index]
     return flattened + booth_rects

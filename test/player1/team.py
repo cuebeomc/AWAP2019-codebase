@@ -16,7 +16,7 @@ class Team(object):
         self.board = initial_board
         self.team_size = team_size
 
-    def step(self, visible_board, positions, score):
+    def step(self, visible_board, states, score):
         """This function should return a list of directions. For example,
         [Direction.RIGHT, Direction.LEFT, Direction.NONE]
         indicates that the main bot is told to go right, the first helper
