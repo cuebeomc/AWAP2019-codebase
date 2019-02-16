@@ -324,7 +324,7 @@ class Board(object):
                 log.write("{} {} {}\n".format(self.team_size, team2,
                                               len(self.bots)))
                 for company in self.chosen_companies:
-                    log.write("{}\n".format(company))
+                    log.write("{}\n".format(company[0]))
                 log.write("\n")
 
             log.write("{} {} {}\n".format(self.time_step, self.scores[0], self.scores[1] if self.players > 1 else 0))
