@@ -86,24 +86,24 @@ class Board(object):
 
         start_id = 0
         for i in range(0, self.num_bots//10):
-            num = i
+            num = i * 10
+            self.bots.append(JitteryBot(self, self.start, 1, num))
+            num += 1
+            self.bots.append(JitteryBot(self, self.start, 1, num))
+            num += 1
             self.bots.append(JitteryBot(self, self.start, 1, num))
             num += 1
             self.bots.append(ExtrovertBot(self, self.start, 1, num))
-            num += 1
-            self.bots.append(ExtrovertBot(self, self.start, 1, num))
-            num += 1
-            self.bots.append(RandomBot(self, self.start, 1, num, "L"))
-            num += 1
-            self.bots.append(RandomBot(self, self.start, 1, num, "L"))
-            num += 1
-            self.bots.append(RandomBot(self, self.start, 1, num, "L"))
             num += 1
             self.bots.append(RandomBot(self, self.start, 1, num, "S"))
             num += 1
             self.bots.append(RandomBot(self, self.start, 1, num, "M"))
             num += 1
-            self.bots.append(RandomBot(self, self.start, 1, num, "M"))
+            self.bots.append(RandomBot(self, self.start, 1, num, "L"))
+            num += 1
+            self.bots.append(RandomBot(self, self.start, 1, num, "L"))
+            num += 1
+            self.bots.append(RandomBot(self, self.start, 1, num))
             num += 1
             self.bots.append(RandomBot(self, self.start, 1, num))
         #for i in range(start_id, start_id + 5):

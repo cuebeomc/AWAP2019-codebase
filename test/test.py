@@ -50,9 +50,9 @@ def main(_):
                                  g.board.get_states(1), 0)
 
     for _ in range(FLAGS.num_moves):
-        moves = [player1.step(grid1, state1, score1)]
-        if FLAGS.m:
-            moves.append(player2.step(grid2, state2, score2))
+        moves = [[Direction.NONE, Direction.NONE, Direction.NONE, Direction.NONE]] #[player1.step(grid1, state1, score1)]
+        if FLAGS.m :
+            moves.append([Direction.NONE, Direction.NONE, Direction.NONE, Direction.NONE]) #player2.step(grid2, state2, score2))
 
         result = g.make_move(moves)
         grid1, state1, score1 = result[0]

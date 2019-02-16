@@ -144,7 +144,7 @@ with open(FLAGS.log_file, 'r') as log:
                 company_names += line.split()
         elif sec3:
             bot_status = line.split()
-            if len(bot_status) == 1:
+            if len(bot_status) == 3:
                 time_step = bot_status[0]
                 controller.update(time_step)
             else:
@@ -183,7 +183,6 @@ for a, team in enumerate(bots):
                 if curr_points and not prev_is_none:
                     point_list.append(curr_points)
                     curr_points = [prev_state]
-                if curr_speeds and not prev_is_none:
                     speeds.append(curr_speeds)
                     curr_speeds = []
                 if prev_is_none:
@@ -213,9 +212,9 @@ for a, team in enumerate(bots):
         if curr_nones:
             nones.append(curr_nones)
 
-        #print("len of points: {}".format(np.shape(point_list)))
-        #print("len of nones: {}".format(np.shape(nones)))
-        #print("len of speeds: {}".format(np.shape(speeds)))
+        #print("len of points: {}".format((point_list)))
+        #print("len of nones: {}".format((nones)))
+        #print("len of speeds: {}".format((speeds)))
         #_ = input("Test!: ")
 
         total_points = []

@@ -24,7 +24,7 @@ class RandomBot(Bot):
             src = self.loc
             if not self.queue:
                 self.booth = random.choice(self.choices)
-                self.queue = BFS(self.board, src, lambda tile: tile.is_end_of_line() and tile.is_part_of_line() == self.booth)
+                self.queue = BFS(self.board, src, lambda tile: tile.is_end_of_line() and tile.get_line() == self.booth)
 
         if self.queue:
             if self.loc == self.queue[0]:

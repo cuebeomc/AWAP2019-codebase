@@ -245,6 +245,8 @@ class Line(object):
         for tile in self.tiles:
             if tile == last_tile:
                 tile.update_line(line)
+                if not end:
+                    tile.set_end_of_line(True)
             else:
                 mini_line = line[:self.max_per_tile]
                 line = line[self.max_per_tile:]

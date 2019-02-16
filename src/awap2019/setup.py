@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='awap2019',
-      version='1.0',
+      version='1.2.5',
       description='Module for AWAP 2019.',
       long_description='Contains essential classes for competitors.',
       url='http://github.com/cuebeomc/awap2019',
@@ -11,5 +11,6 @@ setup(name='awap2019',
       packages=find_packages(),
       install_requires=[
           'numpy',
+          'absl-py'
       ],
       )
