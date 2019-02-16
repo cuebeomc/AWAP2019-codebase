@@ -10,6 +10,8 @@ that is ordered (index 0 contains the main bot's loc, index 1 contains
 from awap2019 import Tile, Direction
 from awap2019.bots import Bot
 
+import numpy as np
+
 class Team(object):
     # initial_board is a 2d grid full of tiles of booth information, but no bots or lines!
     # team_size is how many bots you should expect (for competition purposes we'll have 4)
@@ -25,6 +27,9 @@ class Team(object):
         indicates that the main bot is told to go right, the first helper
         bot goes left, and the second helper bot does nothing.
         """
+
+        print(np.matrix(visible_board))
+
         moves = []
         for i in range(self.team_size):
 

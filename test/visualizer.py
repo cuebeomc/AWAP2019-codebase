@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
 import numpy as np
-
+import random
 import sys
 
 FLAGS = flags.FLAGS
@@ -103,12 +103,16 @@ for n, line in enumerate(lines):
 ## Creating rectangles ##
 #########################
 
+rect_colors = {'#8b8989', '#7259ff', '#ff4c38', '#ffa75a', '#9bff49', '#65ffc9'}
+
 booth_rects = []
 for booth in booth_tiles:
     lx, ly = booth[0]
     ux, uy = booth[-1]
     w, h = (ux - lx + 1) * 3, (uy - ly + 1) * 3
-    booth_rects.append(plt.Rectangle((lx * 3, ly * 3), w, h, edgecolor='k', facecolor='#8b8989'))
+
+    booth_color = random.sample(rect_colors, 1)[0]
+    booth_rects.append(plt.Rectangle((lx * 3, ly * 3), w, h, edgecolor='k', facecolor=booth_color))
 
 ######################
 ## Parsing log file ##
@@ -125,6 +129,8 @@ company_names = []
 
 time_step = 0
 board = None
+
+scores = []
 
 with open(FLAGS.log_file, 'r') as log:
     for line in log:
@@ -146,6 +152,7 @@ with open(FLAGS.log_file, 'r') as log:
             bot_status = line.split()
             if len(bot_status) == 3:
                 time_step = bot_status[0]
+                scores.append(bot_status[1])
                 controller.update(time_step)
             else:
                 controller.parse_bot_state(bot_status)
@@ -270,23 +277,38 @@ ax.invert_yaxis()
 
 flattened = [bot for team in reversed(bots) for bot in reversed(team)]
 flat_paths = [path for team_paths in reversed(paths) for path in reversed(team_paths)]
-num_frames = max_tstep * FLAGS.speed
+num_frames = (max_tstep + 1) * FLAGS.speed
 
 for i, path in enumerate(flat_paths):
     flat_paths[i] = np.pad(path, pad_width=(0, num_frames-len(path)), mode='edge')
+
+score_text = ax.text(0.1, 0.3, 'cuebeommmm', fontsize=10)
+running_total = 0
+running_arr = []
+for score in scores:
+    running_total += int(score)
+    running_arr.append(running_total)
+
+scores = []
+for score in running_arr:
+    for _ in range(FLAGS.speed):
+        scores.append(str(score))
 
 def init():
     for rect in booth_rects:
         ax.add_patch(rect)
     for bot in flattened:
         ax.add_patch(bot)
-    return flattened + booth_rects
+    score_text.set_text(scores[0])
+    return flattened + booth_rects + [score_text]
 
 def animate(i):
     index = i % num_frames
     for j, bot in enumerate(flattened):
         bot.center = flat_paths[j][index]
-    return flattened + booth_rects
+
+    score_text.set_text(scores[i])
+    return flattened + booth_rects + [score_text]
 
 anim = animation.FuncAnimation(fig, animate,
                                frames=num_frames,
