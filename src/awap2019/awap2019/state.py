@@ -28,7 +28,7 @@ class State(object):
             self.state = "none"
 
     def __repr__(self):
-        return "TID_%02d ID_%02d @%02d.%02d P_%02d_T_%02d_L_%02d" % (self.team_id,
+        return "ID_%02d @%02d.%02d P_%02d_T_%02d_L_%02d" % (
             self.id, self.x, self.y, self.progress, self.threshold, self.line_pos)
 
     # self.state is None?

@@ -58,6 +58,7 @@ class Board(object):
         self.start = None
 
         self.company_values = {}
+        self.company_info = {}
 
         self._parse_companies(company_file)
         self._parse(config_file)
@@ -108,7 +109,7 @@ class Board(object):
             self.bots.append(RandomBot(self, self.start, 1, num))
         #for i in range(start_id, start_id + 5):
             #self.bots.append(JitteryBot(self, self.start, 1, i))
-        
+
         self._log('w')
 
     def x_dim(self):
@@ -213,8 +214,8 @@ class Board(object):
         team_bots = self.player_bots[team]
         for bot in team_bots:
             x, y = bot.get_loc()
-            for i in range(x-Board.visible_range, x+Board.visible_range+1):
-                for j in range(y-Board.visible_range, y+Board.visible_range):
+            for i in range(x-self.visible_range, x+self.visible_range+1):
+                for j in range(y-self.visible_range, y+self.visible_range):
                     if 0 <= i < self.dim[0] and 0 <= j < self.dim[1]:
                         visible_locs.add((i, j))
         return list(visible_locs)
@@ -241,8 +242,8 @@ class Board(object):
     def _pick_company(self, size):
         """Picks a company from the list of all companies."""
         companies = self.company_list[size]
-        if len(companies) < 0:
-            raise "Not enough companies"
+        if len(companies) <= 0:
+            raise Exception("Not enough companies for {}".format(size))
         chosen = random.sample(companies, 1)[0]
         companies.remove(chosen)
         self.chosen_companies.add(chosen)
@@ -276,6 +277,7 @@ class Board(object):
                     #(self.grid).append(row)
                 num_companies = int(dims[2])
                 self.num_bots = int(dims[3])
+                self.visible_range = int(dims[4])
                 sizes = [None] * num_companies
                 booth_tiles = [[] for _ in range(num_companies)]
                 line_tiles = [[] for _ in range(num_companies)]
@@ -303,8 +305,14 @@ class Board(object):
                         curr_line.append(self.grid[r][c])
                     c += 1
                 r += 1
+
+        #print(len(list(filter(lambda x: x == "S", sizes))))
+        #print(len(list(filter(lambda x: x == "M", sizes))))
+        #print(len(list(filter(lambda x: x == "L", sizes))))
+
         for size, b_tiles, l_tiles in zip(sizes, booth_tiles, line_tiles):
             name, value = self._pick_company(size)
+            self.company_info[name] = value
             self.company_values[name] = (value, value//2)
             time = self._random_time(size)
             (self.booths)[name] = Booth(name, size, b_tiles, l_tiles, time, value)

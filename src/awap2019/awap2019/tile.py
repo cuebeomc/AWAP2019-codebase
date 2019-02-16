@@ -19,6 +19,8 @@ class Tile(object):
         self.booth = None
         self.update_threshold()
 
+        self.visible = True
+
     def __str__(self):
         return "({}, {})".format(len(self.bots), len(self.bots_in_line))
 
@@ -247,6 +249,8 @@ class Line(object):
                 tile.update_line(line)
                 if not end:
                     tile.set_end_of_line(True)
+                else:
+                    tile.set_end_of_line(False)
             else:
                 mini_line = line[:self.max_per_tile]
                 line = line[self.max_per_tile:]

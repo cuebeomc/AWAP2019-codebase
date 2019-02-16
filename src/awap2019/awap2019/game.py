@@ -1,7 +1,7 @@
 from .board import Board
 
 class Game(object):
-    def __init__(self, config_file, companies, log_file, multiplayer, debug=False, team_size=4):
+    def __init__(self, config_file, companies, log_file, multiplayer=False, debug=False, team_size=4):
         """Initialize a game instance."""
         self.players = 2 if multiplayer else 1
         self.board = Board(config_file, companies, log_file, debug, team_size,
@@ -10,6 +10,9 @@ class Game(object):
         (self.board).init_bots()
 
         self.scoreboard = [0] * self.players
+
+    def get_companyinfo(self):
+        return self.board.company_info
 
     def _copy(self):
         """Copies the given board into a basic grid for player use."""
@@ -20,6 +23,7 @@ class Game(object):
             for tile in row:
                 new_tile = tile.copy()
                 new_tile.end_of_line = False
+                new_tile.visible = False
                 new_row.append(new_tile)
             new_grid.append(new_row)
         self.basic_grid = new_grid
