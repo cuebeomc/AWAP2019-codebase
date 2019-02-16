@@ -1,17 +1,16 @@
 """The main script.
 
-This sets up a full game with the player code (which should be in the folders
-player1 and player2, respectively) and should implement a class Team with an
-__init__ and a step function. We set up the game with the flags given to
-this file, and we play out the game.
+This sets up a full game with the player code and should implement a class
+Team with an __init__ and a step function. The game is set up with the
+flags given to this file and plays the game.
 
 Example:
+    python test.py --debug
 
-    python test.py -debug -m -team_size 4
 """
 
 from awap2019 import Direction, Game
-from absl import apps, flags
+from absl import app, flags
 
 from player1.team import Team as P1
 
