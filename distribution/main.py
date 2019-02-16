@@ -24,7 +24,7 @@ flags.DEFINE_string('log_directory', 'logs/', 'The path to the log file.')
 flags.DEFINE_string('companies', 'companies.txt', 'The path to the list of '
                                                   'companies.')
 flags.DEFINE_string('board_file', 'tiny', 'The name of the board file.')
-flags.DEFINE_string('output_file', 'out', 'The output file.')
+flags.DEFINE_string('log_file', 'out', 'The file to output to.')
 flags.DEFINE_boolean('debug', False, 'Debug mode')
 
 IDLE_TIME = 10
@@ -32,7 +32,7 @@ TEAM_SIZE = 4
 
 def main(_):
     board_file = "{}{}.txt".format(FLAGS.board_directory, FLAGS.board_file)
-    log_file = "{}{}-{}.txt".format(FLAGS.log_directory, FLAGS.board_file, FLAGS.output_file)
+    log_file = "{}{}-{}.txt".format(FLAGS.log_directory, FLAGS.board_file, FLAGS.log_file)
 
     g = Game(board_file, FLAGS.companies, log_file, False,
              FLAGS.debug, TEAM_SIZE)

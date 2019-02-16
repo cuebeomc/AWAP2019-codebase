@@ -14,16 +14,16 @@ import sys
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string("board_directory", "boards/", "Directory of boards.")
-flags.DEFINE_string("board_file", "sample.txt", "The board file to read from.")
+flags.DEFINE_string("board_file", "sample", "The board file to read from.")
 flags.DEFINE_string("log_directory", "logs/", "Directory of logs.")
-flags.DEFINE_string("log_file", "out.txt", "Log file to read from.")
+flags.DEFINE_string("log_file", "out", "Log file to read from.")
 
 flags.DEFINE_integer("speed", 40, "# of intervals between one turn in the game.")
 
 FLAGS(sys.argv)
 
-board_file = "{}{}".format(FLAGS.board_directory, FLAGS.board_file)
-log_file = "{}{}".format(FLAGS.log_directory, FLAGS.log_file)
+board_file = "{}{}.txt".format(FLAGS.board_directory, FLAGS.board_file)
+log_file = "{}{}-{}.txt".format(FLAGS.log_directory, FLAGS.board_file, FLAGS.log_file)
 
 ########################
 ## Parsing board file ##
