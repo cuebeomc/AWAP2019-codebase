@@ -215,7 +215,7 @@ class Board(object):
         for bot in team_bots:
             x, y = bot.get_loc()
             for i in range(x-self.visible_range, x+self.visible_range+1):
-                for j in range(y-self.visible_range, y+self.visible_range):
+                for j in range(y-self.visible_range, y+self.visible_range+1):
                     if 0 <= i < self.dim[0] and 0 <= j < self.dim[1]:
                         visible_locs.add((i, j))
         return list(visible_locs)

@@ -41,7 +41,8 @@ class Game(object):
                 if loc in visible_locs and not init:
                     new_row.append(tile.copy())
                 else:
-                    new_row.append((self.basic_grid[loc[0]][loc[1]]).copy())
+                    obj = (self.basic_grid[loc[0]][loc[1]]).copy()
+                    new_row.append(obj)
             player_copy.append(new_row)
         return player_copy
 

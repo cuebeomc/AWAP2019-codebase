@@ -27,6 +27,8 @@ class Tile(object):
     def __repr__(self):
         if not self.booth == None:
             return "BOOTH"
+        if not self.visible:
+            return "TXXXX"
         if self.end_of_line:
             return "E%02d%02d" % (len(self.bots), len(self.bots_in_line))
         if not self.line == None:
@@ -139,6 +141,8 @@ class Tile(object):
         new_tile.line = self.line
         new_tile.end_of_line = self.end_of_line
         new_tile.update_threshold()
+
+        new_tile.visible = self.visible
 
         return new_tile
 
