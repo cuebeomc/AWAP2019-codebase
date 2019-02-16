@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='awap2019',
-      version='1.2.6',
+      version='1.2.8',
       description='Module for AWAP 2019.',
       long_description='Contains essential classes for competitors.',
       url='http://github.com/cuebeomc/awap2019',

@@ -11,9 +11,7 @@ Example:
 """
 
 from awap2019 import Direction, Game
-
-from absl import flags
-from absl import app
+from absl import apps, flags
 
 from player1.team import Team as P1
 
@@ -26,11 +24,13 @@ flags.DEFINE_string('companies', 'companies.txt', 'The path to the list of '
                                                   'companies.')
 flags.DEFINE_string('log_file', 'logs/test.txt', 'The path to the log file.')
 flags.DEFINE_boolean('debug', False, 'Debug mode')
-flags.DEFINE_integer('team_size', 4, 'The team size.')
+
+IDLE_TIME = 10
+TEAM_SIZE = 4
 
 def main(_):
     g = Game(FLAGS.config, FLAGS.companies, FLAGS.log_file, False,
-             FLAGS.debug, FLAGS.team_size)
+             FLAGS.debug, TEAM_SIZE)
 
     grid = g.generate_player_copy(init=True)
 
@@ -41,13 +41,13 @@ def main(_):
     score = 0
 
     # for the first few moves, your bot will idle while the AI gets a head start
-    for _ in range(10):
+    for _ in range(IDLE_TIME):
         moves = [Direction.NONE for _ in range(FLAGS.team_size)]
         result = g.make_move([moves])
 
         grid, state, score = result[0]
         if FLAGS.debug:
-            print("| Team 1 states: %s" % str(state))
+            print("| Team states: %s" % str(state))
             print("| Score: {}".format(score))
 
     for x in range(FLAGS.num_moves):
@@ -56,7 +56,7 @@ def main(_):
 
         grid, state, score = result[0]
         if FLAGS.debug:
-            print("| Team 1 states: %s" % str(state))
+            print("| Team states: %s" % str(state))
             print("| Score: {}".format(score))
         if score >= FLAGS.score_threshold:
             print("Won with score {}, took {} moves:\nMoves:{}".format(score, x, x))
