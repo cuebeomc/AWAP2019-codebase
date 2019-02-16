@@ -108,6 +108,23 @@ Squarespace S 13
 Affirm S 17
 Palantir M 15 
 TwoSigma M 22
+PureStorage M
+Dremio S
+MapR S
+Cloudera M
+Mozilla M
+MarkLogic S
+Bumble S
+Wish S
+Hulu M
+Pandora M
+Robinhood S
+MathWorks M
+Samsara S
+Ticketmaster M
+Eventbrite M
+Soundcloud M
+SkelterLabs S
 """
 
 if len(sys.argv) < 2:
