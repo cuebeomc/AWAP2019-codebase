@@ -37,6 +37,9 @@ class Tile(object):
         #return "({}, {})".format(len(self.bots), len(self.bots_in_line))
 
     # Getters that are available to players.
+    def is_visible(self):
+        return self.visible
+
     def get_line(self):
         """
         If this tile is part of a line, returns the name of the company
