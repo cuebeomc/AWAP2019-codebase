@@ -12,7 +12,7 @@ Example:
 from awap2019 import Direction, Game
 from absl import app, flags
 
-from player.team import Team as P
+from player1.team import Team as P
 
 FLAGS = flags.FLAGS
 flags.DEFINE_integer('num_moves', 300, 'The number of moves in a game.')
@@ -31,15 +31,15 @@ IDLE_TIME = 10
 TEAM_SIZE = 4
 
 def main(_):
-    board_file = "{}{}.txt".format(FLAGS.board_directory, FLAGS.board)
-    log_file = "{}{}-{}.txt".format(FLAGS.log_directory, FLAGS.board, FLAGS.output_file)
+    board_file = "{}{}.txt".format(FLAGS.board_directory, FLAGS.board_file)
+    log_file = "{}{}-{}.txt".format(FLAGS.log_directory, FLAGS.board_file, FLAGS.output_file)
 
     g = Game(board_file, FLAGS.companies, log_file, False,
              FLAGS.debug, TEAM_SIZE)
 
     grid = g.generate_player_copy(init=True)
 
-    player1 = P(grid, FLAGS.team_size, g.get_companyinfo())
+    player1 = P(grid, TEAM_SIZE, g.get_companyinfo())
 
     grid = g.generate_player_copy(team=0)
     state = g.board.get_states(0)
@@ -47,7 +47,7 @@ def main(_):
 
     # for the first few moves, your bot will idle while the AI gets a head start
     for _ in range(IDLE_TIME):
-        moves = [Direction.NONE for _ in range(FLAGS.team_size)]
+        moves = [Direction.NONE for _ in range(TEAM_SIZE)]
         result = g.make_move([moves])
 
         grid, state, score = result[0]
