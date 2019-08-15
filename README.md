@@ -1,4 +1,6 @@
-# AWAP 2019
+# AWAP 2019 Codebase
+
+[8/15/2019] Changing name to create distinction between AWAP2019 repo.
 
 Repository for AWAP 2019 game development.
 
